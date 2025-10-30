@@ -1,21 +1,24 @@
-import Tablero from './tablero.js';
-class JuegoPeg {
-    constructor(canvas) {
-        this.canvas = canvas;
-        this.tablero = new Tablero(canvas);
+class JuegoController {
+    constructor(tableroModel, tableroView, gameView) {
+        this.tablero = tableroModel;
+        this.vista = tableroView;
+        this.gameView = gameView;
+
         this.fichaSeleccionada = null;
         this.juegoActivo = true;
         this.tiempoInicio = Date.now();
         this.tiempoTranscurrido = 0;
         this.intervaloTimer = null;
 
+        this.canvas = this.vista.canvas;
+
         this.inicializarEventos();
         this.iniciarTimer();
-        this.iniciarAnimacion();
         this.actualizarInterfaz();
     }
 
     inicializarEventos() {
+        // Mousedown
         this.canvas.addEventListener('mousedown', (e) => {
             if (!this.juegoActivo) return;
 
@@ -39,18 +42,24 @@ class JuegoPeg {
             }
         });
 
+        // Mousemove (arrastre + cursor)
         this.canvas.addEventListener('mousemove', (e) => {
             if (!this.juegoActivo) return;
 
-            if (this.fichaSeleccionada && this.fichaSeleccionada.arrastrando) {
-                let rect = this.canvas.getBoundingClientRect();
-                let mouseX = e.clientX - rect.left;
-                let mouseY = e.clientY - rect.top;
+            let rect = this.canvas.getBoundingClientRect();
+            let mouseX = e.clientX - rect.left;
+            let mouseY = e.clientY - rect.top;
 
+            if (this.fichaSeleccionada && this.fichaSeleccionada.arrastrando) {
                 this.fichaSeleccionada.actualizarPosicion(mouseX, mouseY);
             }
+
+            // Cursor dinámico
+            let ficha = this.tablero.obtenerFichaEnPosicion(mouseX, mouseY);
+            this.canvas.style.cursor = ficha ? 'grab' : 'default';
         });
 
+        // Mouseup
         this.canvas.addEventListener('mouseup', (e) => {
             if (!this.juegoActivo) return;
 
@@ -79,16 +88,9 @@ class JuegoPeg {
             }
         });
 
-        // Cursor dinámico
-        this.canvas.addEventListener('mousemove', (e) => {
-            if (!this.juegoActivo) return;
-
-            let rect = this.canvas.getBoundingClientRect();
-            let mouseX = e.clientX - rect.left;
-            let mouseY = e.clientY - rect.top;
-
-            let ficha = this.tablero.obtenerFichaEnPosicion(mouseX, mouseY);
-            this.canvas.style.cursor = ficha ? 'grab' : 'default';
+        // Resize: recalcular offsets y reposicionar fichas
+        window.addEventListener('resize', () => {
+            this.tablero.actualizarCanvasSize(this.canvas.width, this.canvas.height);
         });
     }
 
@@ -96,29 +98,14 @@ class JuegoPeg {
         this.intervaloTimer = setInterval(() => {
             if (this.juegoActivo) {
                 this.tiempoTranscurrido = Math.floor((Date.now() - this.tiempoInicio) / 1000);
-                this.actualizarTimer();
+                this.gameView.actualizarTimer(this.tiempoTranscurrido);
             }
         }, 1000);
     }
 
-    actualizarTimer() {
-        let minutos = Math.floor(this.tiempoTranscurrido / 60);
-        let segundos = this.tiempoTranscurrido % 60;
-
-        let timerElemento = document.getElementById('timer');
-        if (timerElemento) {
-            timerElemento.textContent =
-                (minutos < 10 ? '0' : '') + minutos + ':' +
-                (segundos < 10 ? '0' : '') + segundos;
-        }
-    }
-
     actualizarInterfaz() {
         let fichasCount = this.tablero.contarFichas();
-        let elementoFichas = document.getElementById('fichas-count');
-        if (elementoFichas) {
-            elementoFichas.textContent = fichasCount;
-        }
+        this.gameView.actualizarFichasCount(fichasCount);
     }
 
     verificarFinDeJuego() {
@@ -132,19 +119,12 @@ class JuegoPeg {
         clearInterval(this.intervaloTimer);
 
         let fichasRestantes = this.tablero.contarFichas();
-        let gameOverDiv = document.getElementById('game-over');
-        let gameOverTitle = document.getElementById('game-over-title');
-        let gameOverMessage = document.getElementById('game-over-message');
 
         if (fichasRestantes === 1) {
-            gameOverTitle.textContent = '🏆 ¡Victoria Perfecta!';
-            gameOverMessage.textContent = `¡Increíble! Completaste el juego con solo 1 ficha en ${this.formatearTiempo()}`;
+            this.gameView.mostrarGameOver('🏆 ¡Victoria Perfecta!', `¡Increíble! Completaste el juego con solo 1 ficha en ${this.formatearTiempo()}`);
         } else {
-            gameOverTitle.textContent = '¡JuegoPeg Terminado!';
-            gameOverMessage.textContent = `Quedaron ${fichasRestantes} fichas. Tiempo: ${this.formatearTiempo()}. ¡Intenta de nuevo!`;
+            this.gameView.mostrarGameOver('¡JuegoPeg Terminado!', `Quedaron ${fichasRestantes} fichas. Tiempo: ${this.formatearTiempo()}. ¡Intenta de nuevo!`);
         }
-
-        gameOverDiv.classList.remove('hidden');
     }
 
     formatearTiempo() {
@@ -164,19 +144,38 @@ class JuegoPeg {
         this.iniciarTimer();
 
         this.actualizarInterfaz();
-
-        let gameOverDiv = document.getElementById('game-over');
-        if (gameOverDiv) {
-            gameOverDiv.classList.add('hidden');
-        }
-    }
-
-    iniciarAnimacion() {
-        const loop = () => {
-            this.tablero.dibujar();
-            requestAnimationFrame(loop);
-        };
-        loop();
+        this.gameView.ocultarGameOver();
     }
 }
+
+let juegoController;
+window.addEventListener('DOMContentLoaded', () => {
+    let canvas = document.getElementById('gameCanvas');
+
+    if (canvas) {
+        // Cargamos dependencias: modelos, vistas y controlador ya deben estar disponibles en el scope global o importadas
+        const tablero = new Tablero();
+        const tableroView = new TableroView(canvas, tablero);
+        const gameView = new GameView();
+        juegoController = new JuegoController(tablero, tableroView, gameView);
+
+        let btnReiniciar = document.getElementById('btn-reiniciar');
+        if (btnReiniciar) {
+            btnReiniciar.addEventListener('click', () => {
+                juegoController.reiniciar();
+            });
+        }
+
+        let btnReiniciarGameOver = document.getElementById('btn-reiniciar-gameover');
+        if (btnReiniciarGameOver) {
+            btnReiniciarGameOver.addEventListener('click', () => {
+                juegoController.reiniciar();
+            });
+        }
+
+        console.log('JuegoPeg (MVC) iniciado correctamente');
+    } else {
+        console.error('No se encontró el canvas del juego');
+    }
+});
 

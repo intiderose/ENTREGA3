@@ -1,15 +1,14 @@
 class Tablero {
-    constructor(canvas) {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
+    constructor() {
         this.filas = 7;
         this.columnas = 7;
-        this.tamañoCasilla = 80;
+        this.tamanoCasilla = 80; // renamed from tamañoCasilla to tamanoCasilla (ASCII-safe)
         this.espaciado = 20;
         this.radioFicha = 30;
 
-        this.offsetX = (canvas.width - (this.columnas * this.tamañoCasilla + (this.columnas - 1) * this.espaciado)) / 2;
-        this.offsetY = (canvas.height - (this.filas * this.tamañoCasilla + (this.filas - 1) * this.espaciado)) / 2;
+        // Offsets del tablero dentro del canvas; la vista debe establecerlos con actualizarCanvasSize
+        this.offsetX = 0;
+        this.offsetY = 0;
 
         this.matriz = [
             [-1, -1,  1,  1,  1, -1, -1],
@@ -23,8 +22,14 @@ class Tablero {
 
         this.fichas = [];
         this.movimientosValidos = [];
-        this.animacionHints = 0;
 
+        // No inicializamos fichas hasta que la vista configure offsets
+    }
+
+    // La vista debe llamar a este método cuando conozca el tamaño del canvas
+    actualizarCanvasSize(canvasWidth, canvasHeight) {
+        this.offsetX = (canvasWidth - (this.columnas * this.tamanoCasilla + (this.columnas - 1) * this.espaciado)) / 2;
+        this.offsetY = (canvasHeight - (this.filas * this.tamanoCasilla + (this.filas - 1) * this.espaciado)) / 2;
         this.inicializarFichas();
     }
 
@@ -42,8 +47,8 @@ class Tablero {
     }
 
     obtenerPosicionCasilla(fila, columna) {
-        let x = this.offsetX + columna * (this.tamañoCasilla + this.espaciado) + this.tamañoCasilla / 2;
-        let y = this.offsetY + fila * (this.tamañoCasilla + this.espaciado) + this.tamañoCasilla / 2;
+        let x = this.offsetX + columna * (this.tamanoCasilla + this.espaciado) + this.tamanoCasilla / 2;
+        let y = this.offsetY + fila * (this.tamanoCasilla + this.espaciado) + this.tamanoCasilla / 2;
         return { x: x, y: y };
     }
 
@@ -65,92 +70,10 @@ class Tablero {
             }
         }
 
-        if (menorDistancia < this.tamañoCasilla) {
+        if (menorDistancia < this.tamanoCasilla) {
             return mejorCasilla;
         }
         return null;
-    }
-
-    dibujar() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        this.ctx.fillStyle = '#2c1810';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-        for (let fila = 0; fila < this.filas; fila++) {
-            for (let col = 0; col < this.columnas; col++) {
-                if (this.matriz[fila][col] !== -1) {
-                    this.dibujarCasilla(fila, col);
-                }
-            }
-        }
-
-        if (this.movimientosValidos.length > 0) {
-            this.dibujarHints();
-        }
-
-        for (let i = 0; i < this.fichas.length; i++) {
-            this.fichas[i].dibujar(this.ctx);
-        }
-    }
-
-    dibujarCasilla(fila, columna) {
-        let pos = this.obtenerPosicionCasilla(fila, columna);
-
-        this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-        this.ctx.shadowBlur = 8;
-        this.ctx.shadowOffsetX = 2;
-        this.ctx.shadowOffsetY = 2;
-
-        this.ctx.fillStyle = '#d2b48c';
-        this.ctx.beginPath();
-        this.ctx.arc(pos.x, pos.y, this.radioFicha + 5, 0, Math.PI * 2);
-        this.ctx.fill();
-
-        this.ctx.strokeStyle = '#8b7355';
-        this.ctx.lineWidth = 3;
-        this.ctx.stroke();
-
-        this.ctx.shadowColor = 'transparent';
-        this.ctx.shadowBlur = 0;
-    }
-
-    dibujarHints() {
-        this.animacionHints += 0.1;
-        let escala = 1 + Math.sin(this.animacionHints) * 0.2;
-
-        for (let i = 0; i < this.movimientosValidos.length; i++) {
-            let mov = this.movimientosValidos[i];
-            let pos = this.obtenerPosicionCasilla(mov.filaDestino, mov.colDestino);
-
-            this.ctx.save();
-            this.ctx.translate(pos.x, pos.y);
-            this.ctx.scale(escala, escala);
-
-            this.ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, -20);
-            this.ctx.lineTo(-10, -10);
-            this.ctx.lineTo(-5, -10);
-            this.ctx.lineTo(-5, 0);
-            this.ctx.lineTo(5, 0);
-            this.ctx.lineTo(5, -10);
-            this.ctx.lineTo(10, -10);
-            this.ctx.closePath();
-            this.ctx.fill();
-
-            this.ctx.strokeStyle = '#ff8c00';
-            this.ctx.lineWidth = 2;
-            this.ctx.stroke();
-
-            this.ctx.restore();
-
-            this.ctx.beginPath();
-            this.ctx.arc(pos.x, pos.y, this.radioFicha * escala, 0, Math.PI * 2);
-            this.ctx.strokeStyle = 'rgba(255, 215, 0, 0.6)';
-            this.ctx.lineWidth = 3;
-            this.ctx.stroke();
-        }
     }
 
     obtenerFichaEnPosicion(x, y) {
@@ -193,23 +116,21 @@ class Tablero {
     }
 
     esMovimientoValido(filaOrigen, colOrigen, filaAdyacente, colAdyacente, filaDestino, colDestino) {
+        // Comprobaciones de límites
+        if (filaAdyacente < 0 || filaAdyacente >= this.filas || colAdyacente < 0 || colAdyacente >= this.columnas) {
+            return false;
+        }
+
         if (filaDestino < 0 || filaDestino >= this.filas || colDestino < 0 || colDestino >= this.columnas) {
             return false;
         }
 
-        if (this.matriz[filaDestino][colDestino] === -1) {
-            return false;
-        }
+        // Comprobaciones combinadas: la casilla destino debe ser válida y vacía, y la adyacente debe tener ficha
+        const destinoValido = this.matriz[filaDestino][colDestino] !== -1;
+        const adyacenteTieneFicha = this.matriz[filaAdyacente][colAdyacente] === 1;
+        const destinoVacio = this.matriz[filaDestino][colDestino] === 0;
 
-        if (this.matriz[filaAdyacente][colAdyacente] !== 1) {
-            return false;
-        }
-
-        if (this.matriz[filaDestino][colDestino] !== 0) {
-            return false;
-        }
-
-        return true;
+        return destinoValido && adyacenteTieneFicha && destinoVacio;
     }
 
     limpiarMovimientosValidos() {
@@ -228,7 +149,8 @@ class Tablero {
                 this.matriz[ficha.fila][ficha.columna] = 0;
                 this.matriz[casillaDestino.fila][casillaDestino.columna] = 1;
 
-                ficha.moverACasilla(casillaDestino.fila, casillaDestino.columna, casillaDestino.x, casillaDestino.y);
+                let pos = this.obtenerPosicionCasilla(casillaDestino.fila, casillaDestino.columna);
+                ficha.moverACasilla(casillaDestino.fila, casillaDestino.columna, pos.x, pos.y);
 
                 this.limpiarMovimientosValidos();
                 return true;
@@ -293,4 +215,3 @@ class Tablero {
         this.limpiarMovimientosValidos();
     }
 }
-

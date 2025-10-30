@@ -1,3 +1,4 @@
+import Tablero from './tablero.js';
 class JuegoPeg {
     constructor(canvas) {
         this.canvas = canvas;

@@ -1,11 +1,11 @@
 /* Scoped styles para la página PegSolitaire: se eliminó el reset global y reglas que chocaban con juego.css. */
 
 
-/* Información del juego (scoped) */
+/* Información del juego (scoped): menos separación y padding */
 .peg-page .game-info {
     display: flex;
-    gap: 30px;
-    margin-bottom: 20px;
+    gap: 12px;          /* antes: 30px */
+     /* antes: 20px */
     align-items: center;
 }
 
@@ -14,9 +14,9 @@
     flex-direction: column;
     align-items: center;
     background: #f8f9fa;
-    padding: 15px 25px;
+    padding: 10px 12px; /* antes: 15px 25px */
     border-radius: 10px;
-    min-width: 150px;
+    min-width: 120px;   /* reducir anchura mínima */
 }
 
 .peg-page .label {
@@ -53,7 +53,7 @@
     transform: translateY(0);
 }
 
-/* Canvas del juego (scoped) */
+/* Canvas del juego (scoped): menos margen vertical para acercarlo al borde */
 .peg-page #gameCanvas {
     border: 3px solid #667eea;
     border-radius: 10px;
@@ -62,21 +62,23 @@
 
     /* CAMBIO: centrar el canvas dentro de .game-container */
     display: block;
-    margin: 20px auto; /* espacio superior/inferior opcional */
+
+    max-width: 100%;
+    height: auto;
 }
 
-/* Game over (scoped) */
+/* Game over (scoped): usar inset pequeño para no dejar margenes grandes */
 .peg-page .game-over {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 6px;    /* antes: 0 */
+    left: 6px;   /* antes: 0 */
+    right: 6px;
+    bottom: 6px;
     background: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 20px;
+    border-radius: 18px;
     z-index: 100;
 }
 

@@ -471,7 +471,7 @@ main {
 /* Se eliminaron los estilos para .categories-container y .category-button */
 
 /* --------------------------------------------------------------------------
-   2.5 Tarjetas de Juego
+   2.5 Tarjetas de JuegoPeg
    -------------------------------------------------------------------------- */
 .cards-container {
     display: grid;
@@ -1066,7 +1066,7 @@ main {
         cursor: default;
     }
 
-    /* Tarjetas de Juego */
+    /* Tarjetas de JuegoPeg */
     .game-card {
         width: 196.42px;
         height: 267px;

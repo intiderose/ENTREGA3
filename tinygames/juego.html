@@ -63,6 +63,29 @@
     <div class="breadcrumbs">
         <p><a href="home.html">Home</a> > Juegos  > <span>Peg Solitaire</span></p>
     </div>
+    <div class="game-container">
+        <div class="game-info">
+            <div class="info-box">
+                <span class="label">Fichas restantes:</span>
+                <span id="fichas-count" class="value">32</span>
+            </div>
+            <div class="info-box">
+                <span class="label">Tiempo:</span>
+                <span id="timer" class="value">00:00</span>
+            </div>
+            <button id="btn-reiniciar" class="btn-primary">Reiniciar JuegoPeg</button>
+        </div>
+
+        <canvas id="gameCanvas" width="700" height="700"></canvas>
+
+        <div id="game-over" class="game-over hidden">
+            <div class="game-over-content">
+                <h2 id="game-over-title">¡JuegoPeg Terminado!</h2>
+                <p id="game-over-message"></p>
+                <button id="btn-reiniciar-gameover" class="btn-primary">Jugar de Nuevo</button>
+            </div>
+        </div>
+    </div>
     <main>
         <div class="game-container">
             <div class="game-container__image">

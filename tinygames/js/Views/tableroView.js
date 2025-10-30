@@ -9,6 +9,27 @@ class TableroView {
 
         this.animacionHints = 0;
 
+        // Crear la vista para las fichas
+        this.fichaView = new FichaView(this.ctx);
+
+        // ========================================
+        // 🖼��� IMAGEN DE FONDO DEL TABLERO
+        // ========================================
+        this.imagenFondo = new Image();
+        this.imagenFondoCargada = false;
+        this.patternFondo = null; // Para la opción de 'repetir'
+
+        this.imagenFondo.onload = () => {
+            this.imagenFondoCargada = true;
+            // Creamos el patrón una vez que la imagen ha cargado
+            this.patternFondo = this.ctx.createPattern(this.imagenFondo, 'repeat');
+            console.log('Imagen de fondo del tablero cargada.');
+        };
+
+        // ⬇️ PEGA AQUÍ LA URL DE LA IMAGEN DE FONDO ⬇️
+        // Ejemplo: 'https://www.transparenttextures.com/patterns/wood-plank.png'
+        this.imagenFondo.src = 'assets/sprinfiled.png';
+
         // Iniciar bucle de render
         this.iniciarAnimacion();
     }
@@ -27,9 +48,10 @@ class TableroView {
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = '#2c1810';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // 1. Dibujar el fondo del tablero (imagen o color de respaldo)
+        this.dibujarFondo();
 
+        // 2. Dibujar las casillas
         for (let fila = 0; fila < this.tablero.filas; fila++) {
             for (let col = 0; col < this.tablero.columnas; col++) {
                 if (this.tablero.matriz[fila][col] !== -1) {
@@ -38,12 +60,48 @@ class TableroView {
             }
         }
 
+        // 3. Dibujar los hints (si hay)
         if (this.tablero.movimientosValidos && this.tablero.movimientosValidos.length > 0) {
             this.dibujarHints();
         }
 
+        // 4. Dibujar las fichas
         for (let i = 0; i < this.tablero.fichas.length; i++) {
-            this.dibujarFicha(this.tablero.fichas[i]);
+            this.fichaView.dibujar(this.tablero.fichas[i]);
+        }
+    }
+
+    /**
+     * Dibuja la imagen de fondo en el canvas.
+     * La imagen se escala para cubrir todo el área del canvas manteniendo su relación de aspecto (como background-size: cover).
+     * Esto evita que la imagen se deforme.
+     */
+    dibujarFondo() {
+        const ctx = this.ctx;
+        const canvas = this.canvas;
+
+        if (this.imagenFondoCargada && this.imagenFondo.width > 0) {
+            // Calcula la escala necesaria para que la imagen cubra el canvas sin deformarse.
+            // Se elige la escala mayor para asegurar que tanto el ancho como el alto cubran el canvas.
+            const escala = Math.max(
+                canvas.width / this.imagenFondo.width,
+                canvas.height / this.imagenFondo.height
+            );
+
+            const nuevoAncho = this.imagenFondo.width * escala;
+            const nuevoAlto = this.imagenFondo.height * escala;
+
+            // Centra la imagen en el canvas. Las partes que sobren quedarán fuera (recortadas).
+            const x = (canvas.width - nuevoAncho) / 2;
+            const y = (canvas.height - nuevoAlto) / 2;
+
+            // Dibuja la imagen con las nuevas dimensiones y posición.
+            ctx.drawImage(this.imagenFondo, x, y, nuevoAncho, nuevoAlto);
+
+        } else {
+            // Color de respaldo mientras la imagen carga o si falla la carga.
+            ctx.fillStyle = '#2c1810';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
     }
 
@@ -80,7 +138,7 @@ class TableroView {
             this.ctx.translate(pos.x, pos.y);
             this.ctx.scale(escala, escala);
 
-            this.ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
+            this.ctx.fillStyle = 'rgba(60, 179, 113, 0.8)'; // Verde éxito
             this.ctx.beginPath();
             this.ctx.moveTo(0, -20);
             this.ctx.lineTo(-10, -10);
@@ -92,7 +150,7 @@ class TableroView {
             this.ctx.closePath();
             this.ctx.fill();
 
-            this.ctx.strokeStyle = '#ff8c00';
+            this.ctx.strokeStyle = '#2E8B57'; // Verde mar oscuro
             this.ctx.lineWidth = 2;
             this.ctx.stroke();
 
@@ -100,54 +158,9 @@ class TableroView {
 
             this.ctx.beginPath();
             this.ctx.arc(pos.x, pos.y, this.tablero.radioFicha * escala, 0, Math.PI * 2);
-            this.ctx.strokeStyle = 'rgba(255, 215, 0, 0.6)';
+            this.ctx.strokeStyle = 'rgba(60, 179, 113, 0.6)'; // Verde éxito con transparencia
             this.ctx.lineWidth = 3;
             this.ctx.stroke();
         }
     }
-
-    dibujarFicha(ficha) {
-        const ctx = this.ctx;
-
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-        ctx.shadowBlur = ficha.seleccionada ? 15 : 10;
-        ctx.shadowOffsetX = 3;
-        ctx.shadowOffsetY = 3;
-
-        ctx.beginPath();
-        ctx.arc(ficha.x, ficha.y, ficha.radio, 0, Math.PI * 2);
-
-        let gradiente = ctx.createRadialGradient(
-            ficha.x - ficha.radio / 3,
-            ficha.y - ficha.radio / 3,
-            ficha.radio / 10,
-            ficha.x,
-            ficha.y,
-            ficha.radio
-        );
-
-        if (ficha.seleccionada) {
-            gradiente.addColorStop(0, '#ffd700');
-            gradiente.addColorStop(1, '#ff8c00');
-        } else {
-            gradiente.addColorStop(0, '#8b4513');
-            gradiente.addColorStop(1, '#5c2e0a');
-        }
-
-        ctx.fillStyle = gradiente;
-        ctx.fill();
-
-        ctx.strokeStyle = ficha.seleccionada ? '#ffd700' : '#3d1f0a';
-        ctx.lineWidth = ficha.seleccionada ? 4 : 2;
-        ctx.stroke();
-
-        ctx.shadowColor = 'transparent';
-        ctx.shadowBlur = 0;
-
-        ctx.beginPath();
-        ctx.arc(ficha.x, ficha.y, ficha.radio / 3, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.fill();
-    }
 }
-

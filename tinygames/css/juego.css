@@ -69,6 +69,12 @@ main {
     margin-top: 0; /* Ahora está pegado al borde superior del main */
     padding-bottom: 24px;
     padding-top: 12px;
+
+    /* CAMBIO: permitir posicionamiento del overlay y centrar contenido */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .game-container__image{
     border: none; /* Eliminado el borde blanco */

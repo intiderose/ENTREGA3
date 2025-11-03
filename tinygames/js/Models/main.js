@@ -16,12 +16,20 @@ window.addEventListener('DOMContentLoaded', () => {
 
         juegoController = new JuegoController(tablero, tableroView, gameView);
 
-        // Configurar botones de reinicio (una sola vez)
-        document.getElementById('btn-reiniciar').addEventListener('click', () => juegoController.reiniciar());
-        document.getElementById('btn-reiniciar-gameover').addEventListener('click', () => juegoController.reiniciar());
-
         gameState = 'PLAYING';
         console.log('JuegoPeg (MVC) iniciado con la ficha: ' + fichaImageUrl);
+    }
+
+    function returnToMenu() {
+        if (juegoController) {
+            juegoController.destroy();
+            juegoController = null;
+        }
+        const gameView = new GameView();
+        gameView.ocultarGameOver();
+
+        gameState = 'MENU';
+        initMenu(); // Re-inicializa el menú y sus listeners
     }
 
     function initMenu() {
@@ -47,6 +55,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
         requestAnimationFrame(mainLoop);
     }
+
+    // Configurar botones de reinicio para que vuelvan al menú
+    document.getElementById('btn-reiniciar').addEventListener('click', returnToMenu);
+    document.getElementById('btn-reiniciar-gameover').addEventListener('click', returnToMenu);
 
     initMenu();
     mainLoop();

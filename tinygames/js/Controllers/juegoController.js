@@ -12,86 +12,97 @@ class JuegoController {
 
         this.canvas = this.vista.canvas;
 
+        // Bind de los manejadores de eventos para poder removerlos después
+        this.boundMouseDown = this.handleMouseDown.bind(this);
+        this.boundMouseMove = this.handleMouseMove.bind(this);
+        this.boundMouseUp = this.handleMouseUp.bind(this);
+        this.boundResize = this.handleResize.bind(this);
+
         this.inicializarEventos();
         this.iniciarTimer();
         this.actualizarInterfaz();
     }
 
     inicializarEventos() {
-        // Mousedown
-        this.canvas.addEventListener('mousedown', (e) => {
-            if (!this.juegoActivo) return;
+        this.canvas.addEventListener('mousedown', this.boundMouseDown);
+        this.canvas.addEventListener('mousemove', this.boundMouseMove);
+        this.canvas.addEventListener('mouseup', this.boundMouseUp);
+        window.addEventListener('resize', this.boundResize);
+    }
 
+    // Mousedown
+    handleMouseDown(e) {
+        if (!this.juegoActivo) return;
+
+        let rect = this.canvas.getBoundingClientRect();
+        let mouseX = e.clientX - rect.left;
+        let mouseY = e.clientY - rect.top;
+
+        let ficha = this.tablero.obtenerFichaEnPosicion(mouseX, mouseY);
+
+        if (ficha) {
+            if (this.fichaSeleccionada && this.fichaSeleccionada !== ficha) {
+                this.fichaSeleccionada.seleccionada = false;
+            }
+
+            this.fichaSeleccionada = ficha;
+            this.fichaSeleccionada.iniciarArrastre(mouseX, mouseY);
+            this.tablero.calcularMovimientosValidos(ficha);
+        } else {
+            this.tablero.limpiarMovimientosValidos();
+            this.fichaSeleccionada = null;
+        }
+    }
+
+    // Mousemove (arrastre + cursor)
+    handleMouseMove(e) {
+        if (!this.juegoActivo) return;
+
+        let rect = this.canvas.getBoundingClientRect();
+        let mouseX = e.clientX - rect.left;
+        let mouseY = e.clientY - rect.top;
+
+        if (this.fichaSeleccionada && this.fichaSeleccionada.arrastrando) {
+            this.fichaSeleccionada.actualizarPosicion(mouseX, mouseY);
+        }
+
+        // Cursor dinámico
+        let ficha = this.tablero.obtenerFichaEnPosicion(mouseX, mouseY);
+        this.canvas.style.cursor = ficha ? 'grab' : 'default';
+    }
+
+    // Mouseup
+    handleMouseUp(e) {
+        if (!this.juegoActivo) return;
+
+        if (this.fichaSeleccionada && this.fichaSeleccionada.arrastrando) {
             let rect = this.canvas.getBoundingClientRect();
             let mouseX = e.clientX - rect.left;
             let mouseY = e.clientY - rect.top;
 
-            let ficha = this.tablero.obtenerFichaEnPosicion(mouseX, mouseY);
+            let casillaDestino = this.tablero.obtenerCasillaMasCercana(mouseX, mouseY);
 
-            if (ficha) {
-                if (this.fichaSeleccionada && this.fichaSeleccionada !== ficha) {
-                    this.fichaSeleccionada.seleccionada = false;
-                }
+            let movimientoExitoso = false;
+            if (casillaDestino) {
+                movimientoExitoso = this.tablero.realizarMovimiento(this.fichaSeleccionada, casillaDestino);
+            }
 
-                this.fichaSeleccionada = ficha;
-                this.fichaSeleccionada.iniciarArrastre(mouseX, mouseY);
-                this.tablero.calcularMovimientosValidos(ficha);
-            } else {
+            if (!movimientoExitoso) {
+                this.fichaSeleccionada.volverPosicionInicial();
                 this.tablero.limpiarMovimientosValidos();
-                this.fichaSeleccionada = null;
-            }
-        });
-
-        // Mousemove (arrastre + cursor)
-        this.canvas.addEventListener('mousemove', (e) => {
-            if (!this.juegoActivo) return;
-
-            let rect = this.canvas.getBoundingClientRect();
-            let mouseX = e.clientX - rect.left;
-            let mouseY = e.clientY - rect.top;
-
-            if (this.fichaSeleccionada && this.fichaSeleccionada.arrastrando) {
-                this.fichaSeleccionada.actualizarPosicion(mouseX, mouseY);
             }
 
-            // Cursor dinámico
-            let ficha = this.tablero.obtenerFichaEnPosicion(mouseX, mouseY);
-            this.canvas.style.cursor = ficha ? 'grab' : 'default';
-        });
+            this.fichaSeleccionada.detenerArrastre();
+            this.fichaSeleccionada = null;
 
-        // Mouseup
-        this.canvas.addEventListener('mouseup', (e) => {
-            if (!this.juegoActivo) return;
+            this.actualizarInterfaz();
+            this.verificarFinDeJuego();
+        }
+    }
 
-            if (this.fichaSeleccionada && this.fichaSeleccionada.arrastrando) {
-                let rect = this.canvas.getBoundingClientRect();
-                let mouseX = e.clientX - rect.left;
-                let mouseY = e.clientY - rect.top;
-
-                let casillaDestino = this.tablero.obtenerCasillaMasCercana(mouseX, mouseY);
-
-                let movimientoExitoso = false;
-                if (casillaDestino) {
-                    movimientoExitoso = this.tablero.realizarMovimiento(this.fichaSeleccionada, casillaDestino);
-                }
-
-                if (!movimientoExitoso) {
-                    this.fichaSeleccionada.volverPosicionInicial();
-                    this.tablero.limpiarMovimientosValidos();
-                }
-
-                this.fichaSeleccionada.detenerArrastre();
-                this.fichaSeleccionada = null;
-
-                this.actualizarInterfaz();
-                this.verificarFinDeJuego();
-            }
-        });
-
-        // Resize: recalcular offsets y reposicionar fichas
-        window.addEventListener('resize', () => {
-            this.tablero.actualizarCanvasSize(this.canvas.width, this.canvas.height);
-        });
+    // Resize: recalcular offsets y reposicionar fichas
+    handleResize() {
+        this.tablero.actualizarCanvasSize(this.canvas.width, this.canvas.height);
     }
 
     iniciarTimer() {
@@ -145,5 +156,21 @@ class JuegoController {
 
         this.actualizarInterfaz();
         this.gameView.ocultarGameOver();
+    }
+
+    destroy() {
+        // Limpiar intervalo del timer
+        clearInterval(this.intervaloTimer);
+
+        // Remover listeners de eventos para que no interfieran con el menú
+        this.canvas.removeEventListener('mousedown', this.boundMouseDown);
+        this.canvas.removeEventListener('mousemove', this.boundMouseMove);
+        this.canvas.removeEventListener('mouseup', this.boundMouseUp);
+        window.removeEventListener('resize', this.boundResize);
+
+        // Limpiar cursor
+        this.canvas.style.cursor = 'default';
+
+        console.log('JuegoController destruido y listeners limpiados.');
     }
 }

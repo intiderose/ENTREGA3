@@ -1,5 +1,5 @@
 class FichaView {
-    constructor(ctx) {
+    constructor(ctx, fichaImageUrl) {
         this.ctx = ctx;
         this.imagenesListas = false;
 
@@ -7,14 +7,14 @@ class FichaView {
         this.imgFichaNormal = new Image();
         this.imgFichaSeleccionada = new Image();
 
-        this.inicializarImagenes();
+        this.inicializarImagenes(fichaImageUrl);
     }
 
     /**
      * Carga las imágenes para los estados normal y seleccionado de la ficha.
      * Se asegura de que las imágenes estén listas antes de intentar dibujarlas.
      */
-    inicializarImagenes() {
+    inicializarImagenes(fichaImageUrl) {
         let cargadas = 0;
         const total = 2;
         const onImageLoad = () => {
@@ -28,11 +28,9 @@ class FichaView {
         this.imgFichaNormal.onload = onImageLoad;
         this.imgFichaSeleccionada.onload = onImageLoad;
 
-        // ⬇️ PEGA AQUÍ LA URL DE TU IMAGEN PARA LA FICHA NORMAL ⬇️
-        this.imgFichaNormal.src = 'assets/fichaPerro.png';
-
-        // ⬇️ PEGA AQUÍ LA URL DE TU IMAGEN PARA LA FICHA SELECCIONADA ⬇️
-        this.imgFichaSeleccionada.src = 'assets/fichaPerro.png';
+        // Las imágenes ahora se cargan desde la URL proporcionada
+        this.imgFichaNormal.src = fichaImageUrl;
+        this.imgFichaSeleccionada.src = fichaImageUrl;
     }
 
     /**
@@ -115,4 +113,3 @@ class FichaView {
         ctx.fill();
     }
 }
-

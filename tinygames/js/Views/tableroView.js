@@ -1,5 +1,5 @@
 class TableroView {
-    constructor(canvas, tableroModel) {
+    constructor(canvas, tableroModel, fichaImageUrl) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.tablero = tableroModel;
@@ -9,11 +9,11 @@ class TableroView {
 
         this.animacionHints = 0;
 
-        // Crear la vista para las fichas
-        this.fichaView = new FichaView(this.ctx);
+        // Crear la vista para las fichas, pasando la URL de la imagen
+        this.fichaView = new FichaView(this.ctx, fichaImageUrl);
 
         // ========================================
-        // 🖼��� IMAGEN DE FONDO DEL TABLERO
+        // 🖼️ IMAGEN DE FONDO DEL TABLERO
         // ========================================
         this.imagenFondo = new Image();
         this.imagenFondoCargada = false;
@@ -30,8 +30,7 @@ class TableroView {
         // Ejemplo: 'https://www.transparenttextures.com/patterns/wood-plank.png'
         this.imagenFondo.src = 'assets/sprinfiled.png';
 
-        // Iniciar bucle de render
-        this.iniciarAnimacion();
+        // El bucle de render ahora es controlado desde fuera
     }
 
     iniciarAnimacion() {

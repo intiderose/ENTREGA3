@@ -98,11 +98,22 @@ class TableroView {
         }
 
         // 4. Dibujar las fichas
+        let fichaArrastrada = null;
         for (let i = 0; i < this.tablero.fichas.length; i++) {
             const ficha = this.tablero.fichas[i];
-            // Determinar qué FichaView usar para dibujar
-            const fichaView = ficha.imageUrl === this.homeroImageUrl ? this.fichaViewHomero : this.fichaViewSeleccionada;
-            fichaView.dibujar(ficha);
+            if (ficha.arrastrando) {
+                fichaArrastrada = ficha;
+            } else {
+                // Determinar qué FichaView usar para dibujar
+                const fichaView = ficha.imageUrl === this.homeroImageUrl ? this.fichaViewHomero : this.fichaViewSeleccionada;
+                fichaView.dibujar(ficha);
+            }
+        }
+
+        // Dibujar la ficha arrastrada al final para que esté por encima de las demás
+        if (fichaArrastrada) {
+            const fichaView = fichaArrastrada.imageUrl === this.homeroImageUrl ? this.fichaViewHomero : this.fichaViewSeleccionada;
+            fichaView.dibujar(fichaArrastrada);
         }
     }
 

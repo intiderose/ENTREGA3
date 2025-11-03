@@ -1,5 +1,5 @@
 class TableroView {
-    constructor(canvas, tableroModel, fichaImageUrl) {
+    constructor(canvas, tableroModel, fichaImageUrl, homeroImageUrl) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.tablero = tableroModel;
@@ -9,8 +9,12 @@ class TableroView {
 
         this.animacionHints = 0;
 
-        // Crear la vista para las fichas, pasando la URL de la imagen
-        this.fichaView = new FichaView(this.ctx, fichaImageUrl);
+        // Crear vistas para las fichas, una para el personaje seleccionado y otra para Homero
+        this.fichaViewSeleccionada = new FichaView(this.ctx, fichaImageUrl);
+        this.fichaViewHomero = new FichaView(this.ctx, homeroImageUrl);
+
+        // Asignar imágenes a las fichas de forma aleatoria
+        this.asignarImagenesAleatorias(fichaImageUrl, homeroImageUrl);
 
         // ========================================
         // 🖼️ IMAGEN DE FONDO DEL TABLERO
@@ -31,6 +35,35 @@ class TableroView {
         this.imagenFondo.src = 'assets/sprinfiled.png';
 
         // El bucle de render ahora es controlado desde fuera
+    }
+
+    asignarImagenesAleatorias(urlSeleccionada, urlHomero) {
+        const totalFichas = this.tablero.fichas.length;
+        const mitadFichas = Math.floor(totalFichas / 2);
+        let imagenesAsignar = [];
+
+        // 1. Crear un array con la mitad de imágenes de Homero y la mitad del personaje seleccionado
+        for (let i = 0; i < totalFichas; i++) {
+            if (i < mitadFichas) {
+                imagenesAsignar.push(urlHomero);
+            } else {
+                imagenesAsignar.push(urlSeleccionada);
+            }
+        }
+
+        // 2. Mezclar el array de imágenes (Algoritmo Fisher-Yates)
+        for (let i = imagenesAsignar.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [imagenesAsignar[i], imagenesAsignar[j]] = [imagenesAsignar[j], imagenesAsignar[i]];
+        }
+
+        // 3. Asignar una URL de imagen a cada ficha en el modelo
+        this.tablero.fichas.forEach((ficha, index) => {
+            ficha.imageUrl = imagenesAsignar[index];
+        });
+
+        // Guardar la URL de Homero para la lógica de dibujo
+        this.homeroImageUrl = urlHomero;
     }
 
     iniciarAnimacion() {
@@ -66,7 +99,10 @@ class TableroView {
 
         // 4. Dibujar las fichas
         for (let i = 0; i < this.tablero.fichas.length; i++) {
-            this.fichaView.dibujar(this.tablero.fichas[i]);
+            const ficha = this.tablero.fichas[i];
+            // Determinar qué FichaView usar para dibujar
+            const fichaView = ficha.imageUrl === this.homeroImageUrl ? this.fichaViewHomero : this.fichaViewSeleccionada;
+            fichaView.dibujar(ficha);
         }
     }
 

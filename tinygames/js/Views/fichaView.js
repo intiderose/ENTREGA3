@@ -16,21 +16,21 @@ class FichaView {
      */
     inicializarImagenes(fichaImageUrl) {
         let cargadas = 0;
-        const total = 2;
+        const total = 1; // Solo necesitamos cargar una imagen
         const onImageLoad = () => {
             cargadas++;
             if (cargadas === total) {
                 this.imagenesListas = true;
-                console.log('Imágenes de FichaView cargadas correctamente.');
+                // Una vez cargada, la asignamos a ambos estados
+                this.imgFichaSeleccionada = this.imgFichaNormal;
+                console.log(`Imagen ${fichaImageUrl} de FichaView cargada.`);
             }
         };
 
         this.imgFichaNormal.onload = onImageLoad;
-        this.imgFichaSeleccionada.onload = onImageLoad;
 
-        // Las imágenes ahora se cargan desde la URL proporcionada
+        // La imagen se carga desde la URL proporcionada
         this.imgFichaNormal.src = fichaImageUrl;
-        this.imgFichaSeleccionada.src = fichaImageUrl;
     }
 
     /**

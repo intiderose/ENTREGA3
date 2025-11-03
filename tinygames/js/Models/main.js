@@ -12,7 +12,8 @@ window.addEventListener('DOMContentLoaded', () => {
     function startGame(fichaImageUrl) {
         const tablero = new Tablero();
         const gameView = new GameView();
-        const tableroView = new TableroView(canvas, tablero, fichaImageUrl);
+        const homeroImageUrl = 'assets/fichaHomero.png'; // Siempre presente
+        const tableroView = new TableroView(canvas, tablero, fichaImageUrl, homeroImageUrl);
 
         juegoController = new JuegoController(tablero, tableroView, gameView);
 

@@ -419,7 +419,7 @@ main {
 
 .extra-block {
     width: 1160px;
-    height: 353px;
+    height: 430px;
     background: #77BBFF;
     border-radius: 20px;
     margin: 91px auto 0 auto;
@@ -848,8 +848,7 @@ main {
 }
 
 .galeria-img {
-    width: 346px;
-    height: 210px;
+    width: 280px;
     object-fit: contain; /* Mostrar la imagen completa */
     border-radius: 20px;
 }

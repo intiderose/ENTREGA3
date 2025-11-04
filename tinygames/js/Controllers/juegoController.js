@@ -6,8 +6,11 @@ class JuegoController {
 
         this.fichaSeleccionada = null;
         this.juegoActivo = true;
-        this.tiempoInicio = Date.now();
-        this.tiempoTranscurrido = 0;
+
+        // Refactor: timer ascendente -> countdown 15:00; al finalizar dispara la misma lógica que 'sin movimientos' (game lost)
+        this.duracionJuego = 15 * 60; // 15 minutos en segundos
+        this.tiempoRestante = this.duracionJuego;
+        this.tiempoFin = null;
         this.intervaloTimer = null;
 
         this.canvas = this.vista.canvas;
@@ -19,7 +22,7 @@ class JuegoController {
         this.boundResize = this.handleResize.bind(this);
 
         this.inicializarEventos();
-        this.iniciarTimer();
+        // El timer ya no se inicia aquí, se controla desde main.js
         this.actualizarInterfaz();
     }
 
@@ -106,10 +109,19 @@ class JuegoController {
     }
 
     iniciarTimer() {
+        this.tiempoFin = Date.now() + this.tiempoRestante * 1000;
         this.intervaloTimer = setInterval(() => {
             if (this.juegoActivo) {
-                this.tiempoTranscurrido = Math.floor((Date.now() - this.tiempoInicio) / 1000);
-                this.gameView.actualizarTimer(this.tiempoTranscurrido);
+                const ahora = Date.now();
+                this.tiempoRestante = Math.round((this.tiempoFin - ahora) / 1000);
+
+                if (this.tiempoRestante <= 0) {
+                    this.tiempoRestante = 0;
+                    this.gameView.actualizarTimer(this.tiempoRestante);
+                    this.finalizarJuego();
+                } else {
+                    this.gameView.actualizarTimer(this.tiempoRestante);
+                }
             }
         }, 1000);
     }
@@ -126,21 +138,28 @@ class JuegoController {
     }
 
     finalizarJuego() {
+        if (!this.juegoActivo) return; // Evitar ejecuciones múltiples
+
         this.juegoActivo = false;
         clearInterval(this.intervaloTimer);
 
         let fichasRestantes = this.tablero.contarFichas();
+        const tiempoAgotado = this.tiempoRestante <= 0;
 
         if (fichasRestantes === 1) {
             this.gameView.mostrarGameOver('¡Victoria!', `¡Felicitaciones! Completaste el juego en ${this.formatearTiempo()}`);
+        } else if (tiempoAgotado) {
+            this.gameView.mostrarGameOver('¡Tiempo Agotado!', `Se acabaron los 15 minutos. Te quedaron ${fichasRestantes} fichas.`);
         } else {
-            this.gameView.mostrarGameOver('¡Juego Terminado!', `Te quedaron ${fichasRestantes} fichas. Tiempo: ${this.formatearTiempo()}`);
+            this.gameView.mostrarGameOver('¡Juego Terminado!', `Te quedaron ${fichasRestantes} fichas. Tiempo restante: ${this.formatearTiempo()}`);
         }
     }
 
     formatearTiempo() {
-        let minutos = Math.floor(this.tiempoTranscurrido / 60);
-        let segundos = this.tiempoTranscurrido % 60;
+        const tiempoTranscurrido = this.duracionJuego - this.tiempoRestante;
+        const tiempoAMostrar = this.duracionJuego - (tiempoTranscurrido > 0 ? tiempoTranscurrido : 0);
+        let minutos = Math.floor(tiempoAMostrar / 60);
+        let segundos = tiempoAMostrar % 60;
         return (minutos < 10 ? '0' : '') + minutos + ':' + (segundos < 10 ? '0' : '') + segundos;
     }
 
@@ -148,8 +167,10 @@ class JuegoController {
         this.tablero.reiniciar();
         this.fichaSeleccionada = null;
         this.juegoActivo = true;
-        this.tiempoInicio = Date.now();
-        this.tiempoTranscurrido = 0;
+
+        // Reiniciar temporizador
+        this.tiempoRestante = this.duracionJuego;
+        this.tiempoFin = Date.now() + this.tiempoRestante * 1000;
 
         clearInterval(this.intervaloTimer);
         this.iniciarTimer();

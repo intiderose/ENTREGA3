@@ -16,6 +16,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const tableroView = new TableroView(canvas, tablero, selectedItem.src, homeroImageUrl, selectedItem.backgroundSrc);
 
         juegoController = new JuegoController(tablero, tableroView, gameView);
+        juegoController.iniciarTimer(); // El timer empieza solo cuando el juego comienza
 
         gameState = 'PLAYING';
         console.log('JuegoPeg (MVC) iniciado con la ficha: ' + selectedItem.src);
@@ -23,11 +24,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
     function returnToMenu() {
         if (juegoController) {
-            juegoController.destroy();
+            juegoController.destroy(); // Esto ya limpia el intervalo del timer
             juegoController = null;
         }
         const gameView = new GameView();
         gameView.ocultarGameOver();
+
+        // Resetear el timer en la UI a 15:00 al volver al menú
+        gameView.actualizarTimer(15 * 60);
 
         gameState = 'MENU';
         initMenu(); // Re-inicializa el menú y sus listeners

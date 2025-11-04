@@ -1,15 +1,18 @@
 class GameView {
     constructor() {}
 
-    actualizarTimer(segundosTranscurridos) {
-        let minutos = Math.floor(segundosTranscurridos / 60);
-        let segundos = segundosTranscurridos % 60;
+    actualizarTimer(segundosRestantes) {
+        // Asegurarse de que no se muestren números negativos
+        const segundos = Math.max(0, segundosRestantes);
+
+        let minutos = Math.floor(segundos / 60);
+        let segundosF = segundos % 60;
 
         let timerElemento = document.getElementById('timer');
         if (timerElemento) {
             timerElemento.textContent =
                 (minutos < 10 ? '0' : '') + minutos + ':' +
-                (segundos < 10 ? '0' : '') + segundos;
+                (segundosF < 10 ? '0' : '') + segundosF;
         }
     }
 

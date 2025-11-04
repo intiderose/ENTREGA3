@@ -8,8 +8,10 @@ window.addEventListener('DOMContentLoaded', () => {
     let gameState = 'MENU'; // 'MENU', 'PLAYING'
     let juegoController = null;
     let menuController = null;
+    let lastSelectedItem = null; // Guardar la selección de ficha
 
     function startGame(selectedItem) {
+        lastSelectedItem = selectedItem; // Guardar la ficha seleccionada
         const tablero = new Tablero();
         const gameView = new GameView();
         const homeroImageUrl = 'assets/fichaHomero.png'; // Siempre presente
@@ -21,22 +23,17 @@ window.addEventListener('DOMContentLoaded', () => {
         gameState = 'PLAYING';
     }
 
-    function returnToMenu() {
+    // NUEVO: reiniciar el juego desde cero, manteniendo la ficha seleccionada
+    function restartGame() {
+        if (!lastSelectedItem) return; // No hay ficha seleccionada, no hacer nada
         if (juegoController) {
-            juegoController.destroy(); // Esto ya limpia el intervalo del timer
+            // Ocultar el popup de game over antes de reiniciar (MVC: usar GameView)
+            juegoController.gameView.ocultarGameOver();
+            juegoController.destroy();
             juegoController = null;
         }
-        const gameView = new GameView();
-        gameView.ocultarGameOver();
-
-        // Resetear el timer en la UI a 15:00 al volver al menú
-        gameView.actualizarTimer(15 * 60);
-
-        // Refactor: Resetear contador de fichas a 32 al volver al menú.
-        gameView.actualizarFichasCount(32);
-
-        gameState = 'MENU';
-        initMenu(); // Re-inicializa el menú y sus listeners
+        // Volver a crear el juego con la última ficha seleccionada
+        startGame(lastSelectedItem);
     }
 
     function initMenu() {
@@ -63,9 +60,17 @@ window.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(mainLoop);
     }
 
-    // Configurar botones de reinicio para que vuelvan al menú
-    document.getElementById('btn-reiniciar').addEventListener('click', returnToMenu);
-    document.getElementById('btn-reiniciar-gameover').addEventListener('click', returnToMenu);
+    // Cambiar: los botones de reinicio ahora reinician el juego desde cero, sin volver al menú
+    document.getElementById('btn-reiniciar').addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        restartGame();
+    });
+    document.getElementById('btn-reiniciar-gameover').addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        restartGame();
+    });
 
     initMenu();
     mainLoop();

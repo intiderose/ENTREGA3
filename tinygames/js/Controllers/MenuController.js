@@ -1,18 +1,26 @@
 class MenuController {
-    constructor(canvas, menuModel, menuView, onCharacterSelect) {
+    constructor(canvas, menuModel, menuView, onCharacterSelect, initialState) {
         this.canvas = canvas;
         this.model = menuModel;
         this.view = menuView;
         this.onCharacterSelect = onCharacterSelect; // Callback para iniciar el juego
+        this.initialState = initialState; // 'START' o 'CHAR_SELECT' opcional
 
         this.handleMenuClick = this.handleMenuClick.bind(this);
     }
 
     init() {
         this.model.loadImages(() => {
-            // Inicialmente mostramos pantalla START y configuramos botón Play
-            this.model.setMenuState('START');
-            this.model.setupPlayButton(this.canvas.width, this.canvas.height);
+            // Usar estado inicial si se pasó, sino START
+            const state = this.initialState || 'START';
+            this.model.setMenuState(state);
+
+            if (state === 'START') {
+                this.model.setupPlayButton(this.canvas.width, this.canvas.height);
+            } else if (state === 'CHAR_SELECT') {
+                this.model.setupMenuItems(this.canvas.width, this.canvas.height);
+            }
+
             this.view.draw(); // solo solicitar renderizado (la vista solo dibuja)
         });
         this.addEventListeners();

@@ -36,12 +36,13 @@ window.addEventListener('DOMContentLoaded', () => {
         startGame(lastSelectedItem);
     }
 
-    function initMenu() {
+    // Modificado: aceptar estado inicial opcional ('START' o 'CHAR_SELECT')
+    function initMenu(initialState) {
         const menuModel = new MenuModel();
         const menuView = new MenuView(canvas, menuModel);
         menuController = new MenuController(canvas, menuModel, menuView, (selectedItem) => {
             startGame(selectedItem);
-        });
+        }, initialState);
         menuController.init();
     }
 
@@ -71,6 +72,38 @@ window.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
         restartGame();
     });
+
+    // NUEVO: función para "Volver al Menú" con los requisitos solicitados
+    function returnToMenu(e) {
+        if (e && e.preventDefault) e.preventDefault();
+        if (e && e.stopPropagation) e.stopPropagation();
+
+        // Detener y destruir el juego actual si existe (limpia timer y listeners)
+        if (juegoController) {
+            juegoController.gameView.ocultarGameOver();
+            juegoController.destroy();
+            juegoController = null;
+        }
+
+        // Limpiar el canvas visual
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Resetear UI: fichas a 32 y timer a 00:00
+        const gameView = new GameView();
+        gameView.actualizarFichasCount(32);
+        gameView.actualizarTimer(0); // muestra 00:00
+
+        // Ir al menú (estado MENU) y abrir directamente el selector de fichas
+        gameState = 'MENU';
+        initMenu('CHAR_SELECT');
+    }
+
+    // Listener para el nuevo botón (si está presente)
+    const volverBtn = document.getElementById('btn-volver-menu');
+    if (volverBtn) {
+        volverBtn.addEventListener('click', returnToMenu);
+    }
 
     initMenu();
     mainLoop();

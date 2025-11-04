@@ -27,7 +27,6 @@ class TableroView {
             this.imagenFondoCargada = true;
             // Creamos el patrón una vez que la imagen ha cargado
             this.patternFondo = this.ctx.createPattern(this.imagenFondo, 'repeat');
-            console.log('Imagen de fondo del tablero cargada.');
         };
 
         // La imagen de fondo ahora se recibe como parámetro

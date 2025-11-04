@@ -10,8 +10,10 @@ class MenuController {
 
     init() {
         this.model.loadImages(() => {
-            this.model.setupMenuItems(this.canvas.width, this.canvas.height);
-            this.view.draw(); // Dibuja el menú una vez que las imágenes están listas
+            // Inicialmente mostramos pantalla START y configuramos botón Play
+            this.model.setMenuState('START');
+            this.model.setupPlayButton(this.canvas.width, this.canvas.height);
+            this.view.draw(); // solo solicitar renderizado (la vista solo dibuja)
         });
         this.addEventListeners();
     }
@@ -29,13 +31,25 @@ class MenuController {
         const mouseX = event.clientX - rect.left;
         const mouseY = event.clientY - rect.top;
 
-        const selectedItem = this.model.getItemAt(mouseX, mouseY);
+        if (this.model.menuState === 'START') {
+            // Si se clickea Play -> cambiar a selección de personajes
+            if (this.model.isPointInPlayButton(mouseX, mouseY)) {
+                this.model.setMenuState('CHAR_SELECT');
+                this.model.setupMenuItems(this.canvas.width, this.canvas.height);
+                // No iniciar el juego aquí; la selección de personaje lo hará
+                this.view.draw();
+            }
+            return;
+        }
 
-        if (selectedItem) {
-            this.model.selectCharacter(selectedItem.src);
-            this.removeEventListeners();
-            if (this.onCharacterSelect) {
-                this.onCharacterSelect(selectedItem);
+        if (this.model.menuState === 'CHAR_SELECT') {
+            const selectedItem = this.model.getItemAt(mouseX, mouseY);
+            if (selectedItem) {
+                this.model.selectCharacter(selectedItem.src);
+                this.removeEventListeners();
+                if (this.onCharacterSelect) {
+                    this.onCharacterSelect(selectedItem);
+                }
             }
         }
     }

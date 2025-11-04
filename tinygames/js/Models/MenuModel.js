@@ -5,12 +5,26 @@ class MenuModel {
             perro: 'assets/fichaPerro.png',
             bart: 'assets/fichaBart.png',
             maggie: 'assets/fichaMaggie.png',
-            background: 'assets/imagenMenu.png' // Añadido
+            background: 'assets/imagenMenu.png',
+            miniature: 'assets/pegSolitarieMiniatura.png'
         };
         this.images = {};
         this.menuItems = [];
         this.imagesLoaded = false;
         this.selectedCharacterSrc = null;
+
+        // Nuevo: estado del menú y propiedades del botón Play
+        this.menuState = 'START'; // 'START' | 'CHAR_SELECT'
+        this.playButton = {
+            x: 0,
+            y: 0,
+            width: 240,
+            height: 64,
+            color: '#FF6B00',
+            text: 'Jugar',
+            textColor: '#FFFFFF',
+            radius: 12
+        };
     }
 
     loadImages(callback) {
@@ -29,7 +43,6 @@ class MenuModel {
                 loadedCount++;
                 if (loadedCount === totalImages) {
                     this.imagesLoaded = true;
-                    console.log('Imágenes del menú cargadas.');
                     if (callback) callback();
                 }
             };
@@ -44,6 +57,33 @@ class MenuModel {
             };
             this.images[key].src = this.imageSources[key];
         }
+    }
+
+    /**
+     * Calcular posición del botón Play (centrado horizontal, abajo del image display)
+     */
+    setupPlayButton(canvasWidth, canvasHeight) {
+        const btn = this.playButton;
+        btn.width = 240;
+        btn.height = 64;
+        btn.x = Math.round((canvasWidth - btn.width) / 2);
+        // Posicionar el botón a 60% de la altura del canvas por defecto
+        btn.y = Math.round(canvasHeight * 0.62);
+    }
+
+    /**
+     * Devuelve true si el punto (x,y) está dentro del botón Play
+     */
+    isPointInPlayButton(x, y) {
+        const b = this.playButton;
+        return x >= b.x && x <= b.x + b.width && y >= b.y && y <= b.y + b.height;
+    }
+
+    /**
+     * Cambia el estado del menú
+     */
+    setMenuState(state) {
+        this.menuState = state;
     }
 
     setupMenuItems(canvasWidth, canvasHeight) {

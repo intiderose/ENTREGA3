@@ -11,29 +11,30 @@
 
 .peg-page .info-box {
     display: flex;
-    flex-direction: column;
     align-items: center;
     background: #f8f9fa;
     padding: 10px 12px; /* antes: 15px 25px */
     border-radius: 10px;
     min-width: 120px;   /* reducir anchura mínima */
+    margin-bottom: 5px;
 }
 
 .peg-page .label {
     font-size: 0.9em;
     color: #666;
     margin-bottom: 5px;
+    margin-right: 20px;
 }
 
 .peg-page .value {
     font-size: 1.8em;
     font-weight: bold;
-    color: #667eea;
+    color: #0C3966;
 }
 
 /* Botones sólo para la página de Peg (no sobreescribe estilos globales) */
 .peg-page .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #FF6B00;
     color: white;
     border: none;
     padding: 15px 30px;
@@ -55,9 +56,6 @@
 
 /* Canvas del juego (scoped): menos margen vertical para acercarlo al borde */
 .peg-page #gameCanvas {
-    border: 3px solid #667eea;
-    border-radius: 10px;
-    background: #f5f1e8;
     cursor: pointer;
 
     /* CAMBIO: centrar el canvas dentro de .game-container */
@@ -95,7 +93,7 @@
 }
 
 .peg-page .game-over-content h2 {
-    color: #667eea;
+    color: #0C3966;
     margin-bottom: 20px;
     font-size: 2em;
 }

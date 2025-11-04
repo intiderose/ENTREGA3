@@ -14,7 +14,7 @@ class MenuView {
         this.ctx.fillStyle = '#ffd700';
         this.ctx.font = 'bold 48px Arial';
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('Elige tu Ficha', this.canvas.width / 2, 150);
+        this.ctx.fillText('Elegi tu Ficha', this.canvas.width / 2, 150);
 
         if (!this.model.imagesLoaded) {
             this.ctx.fillStyle = '#FFFFFF';

@@ -132,9 +132,9 @@ class JuegoController {
         let fichasRestantes = this.tablero.contarFichas();
 
         if (fichasRestantes === 1) {
-            this.gameView.mostrarGameOver('🏆 ¡Victoria Perfecta!', `¡Increíble! Completaste el juego con solo 1 ficha en ${this.formatearTiempo()}`);
+            this.gameView.mostrarGameOver('¡Victoria!', `¡Felicitaciones! Completaste el juego en ${this.formatearTiempo()}`);
         } else {
-            this.gameView.mostrarGameOver('¡JuegoPeg Terminado!', `Quedaron ${fichasRestantes} fichas. Tiempo: ${this.formatearTiempo()}. ¡Intenta de nuevo!`);
+            this.gameView.mostrarGameOver('¡Juego Terminado!', `Te quedaron ${fichasRestantes} fichas. Tiempo: ${this.formatearTiempo()}`);
         }
     }
 

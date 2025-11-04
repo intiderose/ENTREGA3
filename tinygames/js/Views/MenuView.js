@@ -7,7 +7,7 @@ class MenuView {
 
     draw() {
         // Fondo
-        this.ctx.fillStyle = '#2c1810';
+        this.ctx.fillStyle =  'red'; //aca poner la imagen de imagenMenu.png
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         // Título

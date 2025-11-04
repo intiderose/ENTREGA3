@@ -40,16 +40,16 @@ class MenuModel {
         const itemWidth = 150;
         const itemHeight = 150;
         const gap = 40;
-        const totalWidth = (itemWidth * 2) + gap;
-        const totalHeight = (itemHeight * 2) + gap;
+        const numItems = 3; // Ahora son 3 items
+        const totalWidth = (itemWidth * numItems) + (gap * (numItems - 1));
         const startX = (canvasWidth - totalWidth) / 2;
-        const startY = (canvasHeight - totalHeight) / 2;
+        const startY = (canvasHeight - itemHeight) / 2; // Centrado verticalmente
 
         this.menuItems = [
-            { id: 'homero', x: startX, y: startY, width: itemWidth, height: itemHeight, image: this.images.homero, src: this.imageSources.homero },
-            { id: 'marge', x: startX + itemWidth + gap, y: startY, width: itemWidth, height: itemHeight, image: this.images.marge, src: this.imageSources.marge },
-            { id: 'bart', x: startX, y: startY + itemHeight + gap, width: itemWidth, height: itemHeight, image: this.images.bart, src: this.imageSources.bart },
-            { id: 'lisa', x: startX + itemWidth + gap, y: startY + itemHeight + gap, width: itemWidth, height: itemHeight, image: this.images.lisa, src: this.imageSources.lisa }
+            // Homero ya no es una opción seleccionable en el menú
+            { id: 'marge', x: startX, y: startY, width: itemWidth, height: itemHeight, image: this.images.marge, src: this.imageSources.marge },
+            { id: 'bart', x: startX + itemWidth + gap, y: startY, width: itemWidth, height: itemHeight, image: this.images.bart, src: this.imageSources.bart },
+            { id: 'lisa', x: startX + (itemWidth + gap) * 2, y: startY, width: itemWidth, height: itemHeight, image: this.images.lisa, src: this.imageSources.lisa }
         ];
     }
 
@@ -68,4 +68,3 @@ class MenuModel {
         this.selectedCharacterSrc = src;
     }
 }
-

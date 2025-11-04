@@ -32,11 +32,39 @@ class MenuView {
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         }
 
-        // Título
-        this.ctx.fillStyle = '#ffd700';
+        // Título con fondo semitransparente para legibilidad
+        const titleText = 'Elegi tu Ficha';
         this.ctx.font = 'bold 48px Arial';
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('Elegi tu Ficha', this.canvas.width / 2, 150);
+
+        // Medir el texto para dibujar un fondo que se ajuste
+        const textMetrics = this.ctx.measureText(titleText);
+        const textWidth = textMetrics.width;
+        const textHeight = 48; // Aproximación basada en el tamaño de la fuente
+        const padding = 20;
+        const boxX = (this.canvas.width - textWidth) / 2 - padding;
+        const boxY = 150 - textHeight; // Posicionar la caja detrás del texto
+        const boxWidth = textWidth + (padding * 2);
+        const boxHeight = textHeight + padding;
+
+        // Dibujar la caja de fondo semitransparente
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        this.ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 15); // Usar roundRect si está disponible
+        this.ctx.fill();
+
+        // Dibujar el texto del título con sombra
+        this.ctx.fillStyle = '#ffd700';
+        this.ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+        this.ctx.shadowBlur = 5;
+        this.ctx.shadowOffsetX = 2;
+        this.ctx.shadowOffsetY = 2;
+        this.ctx.fillText(titleText, this.canvas.width / 2, 150);
+
+        // Resetear sombra para no afectar otros dibujos
+        this.ctx.shadowColor = 'transparent';
+        this.ctx.shadowBlur = 0;
+        this.ctx.shadowOffsetX = 0;
+        this.ctx.shadowOffsetY = 0;
 
         if (!this.model.imagesLoaded) {
             this.ctx.fillStyle = '#FFFFFF';

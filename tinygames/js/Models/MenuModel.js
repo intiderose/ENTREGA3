@@ -4,7 +4,8 @@ class MenuModel {
             homero: 'assets/fichaHomero.png',
             perro: 'assets/fichaPerro.png',
             bart: 'assets/fichaBart.png',
-            maggie: 'assets/fichaMaggie.png'
+            maggie: 'assets/fichaMaggie.png',
+            background: 'assets/imagenMenu.png' // Añadido
         };
         this.images = {};
         this.menuItems = [];
@@ -29,6 +30,15 @@ class MenuModel {
                 if (loadedCount === totalImages) {
                     this.imagesLoaded = true;
                     console.log('Imágenes del menú cargadas.');
+                    if (callback) callback();
+                }
+            };
+            // Añadido: Manejo de error para la carga de imágenes
+            this.images[key].onerror = () => {
+                console.warn(`No se pudo cargar la imagen: ${this.imageSources[key]}`);
+                loadedCount++; // Contar como "cargada" para no bloquear el callback
+                if (loadedCount === totalImages) {
+                    this.imagesLoaded = true;
                     if (callback) callback();
                 }
             };

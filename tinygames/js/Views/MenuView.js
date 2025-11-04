@@ -6,9 +6,31 @@ class MenuView {
     }
 
     draw() {
-        // Fondo
-        this.ctx.fillStyle =  'red'; //aca poner la imagen de imagenMenu.png
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        // Fondo: Usar imagen si está cargada, sino un color de respaldo
+        const backgroundImage = this.model.images.background;
+        if (backgroundImage && backgroundImage.complete && backgroundImage.naturalWidth !== 0) {
+            // Lógica para 'background-size: cover'
+            const canvasAspect = this.canvas.width / this.canvas.height;
+            const imageAspect = backgroundImage.naturalWidth / backgroundImage.naturalHeight;
+            let drawWidth, drawHeight, x, y;
+
+            if (canvasAspect > imageAspect) {
+                drawWidth = this.canvas.width;
+                drawHeight = this.canvas.width / imageAspect;
+                x = 0;
+                y = (this.canvas.height - drawHeight) / 2;
+            } else {
+                drawHeight = this.canvas.height;
+                drawWidth = this.canvas.height * imageAspect;
+                y = 0;
+                x = (this.canvas.width - drawWidth) / 2;
+            }
+            this.ctx.drawImage(backgroundImage, x, y, drawWidth, drawHeight);
+        } else {
+            // Color de respaldo si la imagen no carga
+            this.ctx.fillStyle = '#E5E7EB'; // Gris claro
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        }
 
         // Título
         this.ctx.fillStyle = '#ffd700';
@@ -35,4 +57,3 @@ class MenuView {
         }
     }
 }
-

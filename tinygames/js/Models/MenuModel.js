@@ -2,9 +2,9 @@ class MenuModel {
     constructor() {
         this.imageSources = {
             homero: 'assets/fichaHomero.png',
-            marge: 'assets/fichaPerro.png',
+            perro: 'assets/fichaPerro.png',
             bart: 'assets/fichaBart.png',
-            lisa: 'assets/fichaMaggie.png'
+            maggie: 'assets/fichaMaggie.png'
         };
         this.images = {};
         this.menuItems = [];
@@ -47,9 +47,9 @@ class MenuModel {
 
         this.menuItems = [
             // Homero ya no es una opción seleccionable en el menú
-            { id: 'marge', x: startX, y: startY, width: itemWidth, height: itemHeight, image: this.images.marge, src: this.imageSources.marge },
+            { id: 'perro', x: startX, y: startY, width: itemWidth, height: itemHeight, image: this.images.perro, src: this.imageSources.perro },
             { id: 'bart', x: startX + itemWidth + gap, y: startY, width: itemWidth, height: itemHeight, image: this.images.bart, src: this.imageSources.bart },
-            { id: 'lisa', x: startX + (itemWidth + gap) * 2, y: startY, width: itemWidth, height: itemHeight, image: this.images.lisa, src: this.imageSources.lisa }
+            { id: 'maggie', x: startX + (itemWidth + gap) * 2, y: startY, width: itemWidth, height: itemHeight, image: this.images.maggie, src: this.imageSources.maggie }
         ];
     }
 

@@ -33,6 +33,9 @@ window.addEventListener('DOMContentLoaded', () => {
         // Resetear el timer en la UI a 15:00 al volver al menú
         gameView.actualizarTimer(15 * 60);
 
+        // Refactor: Resetear contador de fichas a 32 al volver al menú.
+        gameView.actualizarFichasCount(32);
+
         gameState = 'MENU';
         initMenu(); // Re-inicializa el menú y sus listeners
     }

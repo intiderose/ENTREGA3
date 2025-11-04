@@ -73,15 +73,49 @@ class MenuView {
             return;
         }
 
-        // Dibujar items
+        // Dibujar items como círculos
         for (let i = 0; i < this.model.menuItems.length; i++) {
             const item = this.model.menuItems[i];
-            this.ctx.fillStyle = '#d2b48c';
-            this.ctx.fillRect(item.x, item.y, item.width, item.height);
+            const centerX = item.x + item.width / 2;
+            const centerY = item.y + item.height / 2;
+            const radius = item.width / 2;
+
+            this.ctx.save();
+
+            // Sombra para el círculo
+            this.ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+            this.ctx.shadowBlur = 8;
+            this.ctx.shadowOffsetX = 0;
+            this.ctx.shadowOffsetY = 4;
+
+            // Dibujar el círculo de fondo
+            this.ctx.beginPath();
+            this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            this.ctx.fillStyle = '#d2b48c'; // Color de fondo del círculo
+            this.ctx.fill();
+
+            // Resetear sombra antes de dibujar la imagen y el borde
+            this.ctx.shadowColor = 'transparent';
+            this.ctx.shadowBlur = 0;
+            this.ctx.shadowOffsetX = 0;
+            this.ctx.shadowOffsetY = 0;
+
+            // Crear una máscara circular (clip) para la imagen
+            this.ctx.beginPath();
+            this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            this.ctx.clip();
+
+            // Dibujar la imagen de la ficha dentro del círculo
             this.ctx.drawImage(item.image, item.x, item.y, item.width, item.height);
+
+            this.ctx.restore(); // Restaurar el contexto para eliminar el clipping
+
+            // Dibujar el borde del círculo encima de todo
+            this.ctx.beginPath();
+            this.ctx.arc(centerX, centerY, radius - 2, 0, Math.PI * 2); // -2 para que el borde esté dentro
             this.ctx.strokeStyle = '#3d1f0a';
             this.ctx.lineWidth = 4;
-            this.ctx.strokeRect(item.x, item.y, item.width, item.height);
+            this.ctx.stroke();
         }
     }
 }

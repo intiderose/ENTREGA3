@@ -97,6 +97,10 @@ class MenuView {
             const restartBtn = document.getElementById('btn-reiniciar');
             if (restartBtn) restartBtn.style.display = isStart ? 'none' : '';
 
+            // Nuevo: botón "Volver al Menú" -> mismo comportamiento de visibilidad que reiniciar/timer/fichas
+            const volverBtn = document.getElementById('btn-volver-menu');
+            if (volverBtn) volverBtn.style.display = isStart ? 'none' : '';
+
             // Botón reiniciar en Game Over (si existe)
             const restartGameOverBtn = document.getElementById('btn-reiniciar-gameover');
             if (restartGameOverBtn) restartGameOverBtn.style.display = isStart ? 'none' : '';

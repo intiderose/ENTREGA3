@@ -47,9 +47,9 @@ class MenuModel {
 
         this.menuItems = [
             // Homero ya no es una opción seleccionable en el menú
-            { id: 'perro', x: startX, y: startY, width: itemWidth, height: itemHeight, image: this.images.perro, src: this.imageSources.perro },
-            { id: 'bart', x: startX + itemWidth + gap, y: startY, width: itemWidth, height: itemHeight, image: this.images.bart, src: this.imageSources.bart },
-            { id: 'maggie', x: startX + (itemWidth + gap) * 2, y: startY, width: itemWidth, height: itemHeight, image: this.images.maggie, src: this.imageSources.maggie }
+            { id: 'perro', x: startX, y: startY, width: itemWidth, height: itemHeight, image: this.images.perro, src: this.imageSources.perro, backgroundSrc: 'assets/sprinfiled.png' },
+            { id: 'bart', x: startX + itemWidth + gap, y: startY, width: itemWidth, height: itemHeight, image: this.images.bart, src: this.imageSources.bart, backgroundSrc: 'assets/escuela.png' },
+            { id: 'maggie', x: startX + (itemWidth + gap) * 2, y: startY, width: itemWidth, height: itemHeight, image: this.images.maggie, src: this.imageSources.maggie, backgroundSrc: 'assets/casa.png' }
         ];
     }
 

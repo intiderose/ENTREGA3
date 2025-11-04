@@ -9,16 +9,16 @@ window.addEventListener('DOMContentLoaded', () => {
     let juegoController = null;
     let menuController = null;
 
-    function startGame(fichaImageUrl) {
+    function startGame(selectedItem) {
         const tablero = new Tablero();
         const gameView = new GameView();
         const homeroImageUrl = 'assets/fichaHomero.png'; // Siempre presente
-        const tableroView = new TableroView(canvas, tablero, fichaImageUrl, homeroImageUrl);
+        const tableroView = new TableroView(canvas, tablero, selectedItem.src, homeroImageUrl, selectedItem.backgroundSrc);
 
         juegoController = new JuegoController(tablero, tableroView, gameView);
 
         gameState = 'PLAYING';
-        console.log('JuegoPeg (MVC) iniciado con la ficha: ' + fichaImageUrl);
+        console.log('JuegoPeg (MVC) iniciado con la ficha: ' + selectedItem.src);
     }
 
     function returnToMenu() {
@@ -36,8 +36,8 @@ window.addEventListener('DOMContentLoaded', () => {
     function initMenu() {
         const menuModel = new MenuModel();
         const menuView = new MenuView(canvas, menuModel);
-        menuController = new MenuController(canvas, menuModel, menuView, (selectedSrc) => {
-            startGame(selectedSrc);
+        menuController = new MenuController(canvas, menuModel, menuView, (selectedItem) => {
+            startGame(selectedItem);
         });
         menuController.init();
     }

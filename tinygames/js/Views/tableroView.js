@@ -1,5 +1,5 @@
 class TableroView {
-    constructor(canvas, tableroModel, fichaImageUrl, homeroImageUrl) {
+    constructor(canvas, tableroModel, fichaImageUrl, homeroImageUrl, backgroundImageUrl) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.tablero = tableroModel;
@@ -30,9 +30,8 @@ class TableroView {
             console.log('Imagen de fondo del tablero cargada.');
         };
 
-        // ⬇️ PEGA AQUÍ LA URL DE LA IMAGEN DE FONDO ⬇️
-        // Ejemplo: 'https://www.transparenttextures.com/patterns/wood-plank.png'
-        this.imagenFondo.src = 'assets/sprinfiled.png';
+        // La imagen de fondo ahora se recibe como parámetro
+        this.imagenFondo.src = backgroundImageUrl;
 
         // El bucle de render ahora es controlado desde fuera
     }

@@ -35,9 +35,8 @@ class MenuController {
             this.model.selectCharacter(selectedItem.src);
             this.removeEventListeners();
             if (this.onCharacterSelect) {
-                this.onCharacterSelect(this.model.selectedCharacterSrc);
+                this.onCharacterSelect(selectedItem);
             }
         }
     }
 }
-

@@ -201,17 +201,4 @@ class Tablero {
         return false;
     }
 
-    reiniciar() {
-        this.matriz = [
-            [-1, -1,  1,  1,  1, -1, -1],
-            [-1, -1,  1,  1,  1, -1, -1],
-            [ 1,  1,  1,  1,  1,  1,  1],
-            [ 1,  1,  1,  0,  1,  1,  1],
-            [ 1,  1,  1,  1,  1,  1,  1],
-            [-1, -1,  1,  1,  1, -1, -1],
-            [-1, -1,  1,  1,  1, -1, -1]
-        ];
-        this.inicializarFichas();
-        this.limpiarMovimientosValidos();
-    }
 }

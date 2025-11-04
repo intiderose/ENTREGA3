@@ -21,6 +21,10 @@ class JuegoController {
         this.boundMouseUp = this.handleMouseUp.bind(this);
         this.boundResize = this.handleResize.bind(this);
 
+        // Binds para los botones de reinicio
+        this.boundRestartClick = this.handleRestartButton.bind(this);
+        this.boundRestartGameOverClick = this.handleRestartButton.bind(this);
+
         this.inicializarEventos();
         // El timer ya no se inicia aquí, se controla desde main.js
         this.actualizarInterfaz();
@@ -31,6 +35,16 @@ class JuegoController {
         this.canvas.addEventListener('mousemove', this.boundMouseMove);
         this.canvas.addEventListener('mouseup', this.boundMouseUp);
         window.addEventListener('resize', this.boundResize);
+
+        // Listeners para los botones de reinicio
+        const restartBtn = document.getElementById('btn-reiniciar');
+        if (restartBtn) {
+            restartBtn.addEventListener('click', this.boundRestartClick);
+        }
+        const restartGameOverBtn = document.getElementById('btn-reiniciar-gameover');
+        if (restartGameOverBtn) {
+            restartGameOverBtn.addEventListener('click', this.boundRestartGameOverClick);
+        }
     }
 
     // Mousedown
@@ -163,20 +177,9 @@ class JuegoController {
         return (minutos < 10 ? '0' : '') + minutos + ':' + (segundos < 10 ? '0' : '') + segundos;
     }
 
-    reiniciar() {
-        this.tablero.reiniciar();
-        this.fichaSeleccionada = null;
-        this.juegoActivo = true;
-
-        // Reiniciar temporizador
-        this.tiempoRestante = this.duracionJuego;
-        this.tiempoFin = Date.now() + this.tiempoRestante * 1000;
-
-        clearInterval(this.intervaloTimer);
-        this.iniciarTimer();
-
-        this.actualizarInterfaz();
-        this.gameView.ocultarGameOver();
+    handleRestartButton(event) {
+        if (event && event.preventDefault) event.preventDefault();
+        if (event && event.stopPropagation) event.stopPropagation();
     }
 
     destroy() {
@@ -189,7 +192,6 @@ class JuegoController {
         this.canvas.removeEventListener('mouseup', this.boundMouseUp);
         window.removeEventListener('resize', this.boundResize);
 
-        // Limpiar cursor
         this.canvas.style.cursor = 'default';
     }
 }

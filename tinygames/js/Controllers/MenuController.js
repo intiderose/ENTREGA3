@@ -6,9 +6,6 @@ class MenuController {
         this.onCharacterSelect = onCharacterSelect; // Callback para iniciar el juego
 
         this.handleMenuClick = this.handleMenuClick.bind(this);
-
-        // Nuevo: manejador para clicks globales (p. ej. botón "restart")
-        this.handleDocumentClick = this.handleDocumentClick.bind(this);
     }
 
     init() {
@@ -23,14 +20,10 @@ class MenuController {
 
     addEventListeners() {
         this.canvas.addEventListener('click', this.handleMenuClick);
-        // Nuevo: escuchar clicks en todo el documento para detectar botones de reinicio
-        document.addEventListener('click', this.handleDocumentClick);
     }
 
     removeEventListeners() {
         this.canvas.removeEventListener('click', this.handleMenuClick);
-        // Nuevo: eliminar listener global
-        document.removeEventListener('click', this.handleDocumentClick);
     }
 
     handleMenuClick(event) {
@@ -59,34 +52,5 @@ class MenuController {
                 }
             }
         }
-    }
-
-    // Nuevo: manejar clicks fuera del canvas (p. ej. botones UI como "restart")
-    handleDocumentClick(event) {
-        const target = event.target;
-        if (!target) return;
-
-        // Detectar el botón de reinicio de forma robusta:
-        // - id exacto "btn-reiniciar"
-        // - elemento padre cercano que tenga id "btn-reiniciar" (por si el click fue en un icono hijo)
-        // - atributo data-action="restart"
-        // - clase que contenga 'restart' o 'reiniciar' (fallback)
-        const restartEl = (target.id && target.id === 'btn-reiniciar') ||
-                          (target.closest && target.closest('#btn-reiniciar')) ||
-                          (target.dataset && target.dataset.action === 'restart') ||
-                          (target.classList && (target.classList.contains('restart') || target.classList.contains('reiniciar')));
-
-        if (!restartEl) return;
-
-        // Prevenir efectos secundarios del click en el DOM
-        if (event.preventDefault) event.preventDefault();
-        if (event.stopPropagation) event.stopPropagation();
-
-        // Al hacer click en "reiniciar" queremos ir DIRECTO a la selección de ficha (CHAR_SELECT)
-        this.model.setMenuState('CHAR_SELECT');
-        this.model.setupMenuItems(this.canvas.width, this.canvas.height);
-
-        // Pedir a la vista que re-renderice (la vista sigue sin manejar lógica)
-        this.view.draw();
     }
 }

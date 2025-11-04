@@ -191,7 +191,5 @@ class JuegoController {
 
         // Limpiar cursor
         this.canvas.style.cursor = 'default';
-
-        console.log('JuegoController destruido y listeners limpiados.');
     }
 }

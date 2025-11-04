@@ -23,7 +23,6 @@ class FichaView {
                 this.imagenesListas = true;
                 // Una vez cargada, la asignamos a ambos estados
                 this.imgFichaSeleccionada = this.imgFichaNormal;
-                console.log(`Imagen ${fichaImageUrl} de FichaView cargada.`);
             }
         };
 

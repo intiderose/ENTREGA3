@@ -43,7 +43,6 @@ class MenuModel {
                 loadedCount++;
                 if (loadedCount === totalImages) {
                     this.imagesLoaded = true;
-                    console.log('Imágenes del menú cargadas.');
                     if (callback) callback();
                 }
             };

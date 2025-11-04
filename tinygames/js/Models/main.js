@@ -19,7 +19,6 @@ window.addEventListener('DOMContentLoaded', () => {
         juegoController.iniciarTimer(); // El timer empieza solo cuando el juego comienza
 
         gameState = 'PLAYING';
-        console.log('JuegoPeg (MVC) iniciado con la ficha: ' + selectedItem.src);
     }
 
     function returnToMenu() {

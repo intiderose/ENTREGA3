@@ -66,12 +66,23 @@ class MenuController {
         const target = event.target;
         if (!target) return;
 
-        // Detectar por id="restartButton" o data-action="restart"
-        const isRestart = target.id === 'restartButton' || target.dataset && target.dataset.action === 'restart';
+        // Detectar el botón de reinicio de forma robusta:
+        // - id exacto "btn-reiniciar"
+        // - elemento padre cercano que tenga id "btn-reiniciar" (por si el click fue en un icono hijo)
+        // - atributo data-action="restart"
+        // - clase que contenga 'restart' o 'reiniciar' (fallback)
+        const restartEl = (target.id && target.id === 'btn-reiniciar') ||
+                          (target.closest && target.closest('#btn-reiniciar')) ||
+                          (target.dataset && target.dataset.action === 'restart') ||
+                          (target.classList && (target.classList.contains('restart') || target.classList.contains('reiniciar')));
 
-        if (!isRestart) return;
+        if (!restartEl) return;
 
-        // Al hacer click en "restart" queremos ir DIRECTO a la selección de ficha (CHAR_SELECT)
+        // Prevenir efectos secundarios del click en el DOM
+        if (event.preventDefault) event.preventDefault();
+        if (event.stopPropagation) event.stopPropagation();
+
+        // Al hacer click en "reiniciar" queremos ir DIRECTO a la selección de ficha (CHAR_SELECT)
         this.model.setMenuState('CHAR_SELECT');
         this.model.setupMenuItems(this.canvas.width, this.canvas.height);
 

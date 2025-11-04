@@ -76,9 +76,64 @@ class MenuView {
             return;
         }
 
+        // AÑADIDO: mostrar/ocultar elementos de UI fuera del canvas según el estado del menú.
+        // Solo manipula el DOM para renderizado; no modifica el modelo ni maneja eventos.
+        try {
+            const isStart = this.model.menuState === 'START';
+
+            // Contador de fichas: ocultar toda la caja que lo contiene
+            const fichasEl = document.getElementById('fichas-count');
+            if (fichasEl && fichasEl.parentElement) {
+                fichasEl.parentElement.style.display = isStart ? 'none' : '';
+            }
+
+            // Temporizador: ocultar toda la caja que lo contiene
+            const timerEl = document.getElementById('timer');
+            if (timerEl && timerEl.parentElement) {
+                timerEl.parentElement.style.display = isStart ? 'none' : '';
+            }
+
+            // Botón reiniciar principal (header)
+            const restartBtn = document.getElementById('btn-reiniciar');
+            if (restartBtn) restartBtn.style.display = isStart ? 'none' : '';
+
+            // Botón reiniciar en Game Over (si existe)
+            const restartGameOverBtn = document.getElementById('btn-reiniciar-gameover');
+            if (restartGameOverBtn) restartGameOverBtn.style.display = isStart ? 'none' : '';
+
+            // Si existen otros controles relacionados pueden añadirse aquí de forma similar.
+        } catch (e) {
+            // No romper el render si el DOM no está disponible por alguna razón.
+            console.warn('MenuView: error toggling UI elements visibility', e);
+        }
+
         // Render según estado del modelo: START o CHAR_SELECT
         if (this.model.menuState === 'START') {
-            // Dibujar imagen central (display). Elegimos una imagen representativa (homero si existe)
+
+            // Dibujar la miniatura como fondo (cover) si está disponible
+            const miniImage = this.model.images.miniature;
+            if (miniImage && miniImage.complete && miniImage.naturalWidth !== 0) {
+                const canvasAspect = this.canvas.width / this.canvas.height;
+                const imageAspect = miniImage.naturalWidth / miniImage.naturalHeight;
+                let drawWidth, drawHeight, x, y;
+
+                if (canvasAspect > imageAspect) {
+                    drawWidth = this.canvas.width;
+                    drawHeight = this.canvas.width / imageAspect;
+                    x = 0;
+                    y = (this.canvas.height - drawHeight) / 2;
+                } else {
+                    drawHeight = this.canvas.height;
+                    drawWidth = this.canvas.height * imageAspect;
+                    y = 0;
+                    x = (this.canvas.width - drawWidth) / 2;
+                }
+                this.ctx.drawImage(miniImage, x, y, drawWidth, drawHeight);
+            } else {
+                // Si no está la miniatura, mantenemos el color de respaldo para evitar lienzo vacío
+                this.ctx.fillStyle = '#E5E7EB';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            }
 
             // Dibujar botón Play (solo render)
             const b = this.model.playButton;

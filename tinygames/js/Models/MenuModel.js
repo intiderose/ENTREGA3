@@ -21,7 +21,7 @@ class MenuModel {
             width: 240,
             height: 64,
             color: '#FF6B00',
-            text: 'PLAY',
+            text: 'Jugar',
             textColor: '#FFFFFF',
             radius: 12
         };

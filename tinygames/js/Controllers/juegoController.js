@@ -63,7 +63,13 @@ class JuegoController {
             }
 
             this.fichaSeleccionada = ficha;
-            this.fichaSeleccionada.iniciarArrastre(mouseX, mouseY);
+
+            // ===== Cambiado: iniciar arrastre usando el CENTRO de la ficha para que quede bajo el cursor =====
+            const centerX = ficha.x;
+            const centerY = ficha.y;
+            this.fichaSeleccionada.iniciarArrastre(centerX, centerY);
+            // =================================================================================================
+
             this.tablero.calcularMovimientosValidos(ficha);
         } else {
             this.tablero.limpiarMovimientosValidos();
@@ -81,9 +87,12 @@ class JuegoController {
 
         if (this.fichaSeleccionada && this.fichaSeleccionada.arrastrando) {
             this.fichaSeleccionada.actualizarPosicion(mouseX, mouseY);
+            // Mostrar cursor de arrastre activo
+            this.canvas.style.cursor = 'grabbing';
+            return;
         }
 
-        // Cursor dinámico
+        // Cursor dinámico cuando no se está arrastrando
         let ficha = this.tablero.obtenerFichaEnPosicion(mouseX, mouseY);
         this.canvas.style.cursor = ficha ? 'grab' : 'default';
     }

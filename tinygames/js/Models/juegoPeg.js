@@ -31,7 +31,13 @@ class JuegoPeg {
                 }
 
                 this.fichaSeleccionada = ficha;
-                this.fichaSeleccionada.iniciarArrastre(mouseX, mouseY);
+
+                // ===== Cambiado: iniciar arrastre usando el centro de la ficha =====
+                const centerX = ficha.x;
+                const centerY = ficha.y;
+                this.fichaSeleccionada.iniciarArrastre(centerX, centerY);
+                // ===================================================================
+
                 this.tablero.calcularMovimientosValidos(ficha);
             } else {
                 this.tablero.limpiarMovimientosValidos();
@@ -48,9 +54,19 @@ class JuegoPeg {
                 let mouseY = e.clientY - rect.top;
 
                 this.fichaSeleccionada.actualizarPosicion(mouseX, mouseY);
+                // Cursor indicando arrastre activo
+                this.canvas.style.cursor = 'grabbing';
+            } else {
+                // Cursor dinámico cuando no se está arrastrando
+                let rect = this.canvas.getBoundingClientRect();
+                let mouseX = e.clientX - rect.left;
+                let mouseY = e.clientY - rect.top;
+                let ficha = this.tablero.obtenerFichaEnPosicion(mouseX, mouseY);
+                this.canvas.style.cursor = ficha ? 'grab' : 'default';
             }
         });
 
+        // Mouseup
         this.canvas.addEventListener('mouseup', (e) => {
             if (!this.juegoActivo) return;
 
@@ -73,6 +89,9 @@ class JuegoPeg {
 
                 this.fichaSeleccionada.detenerArrastre();
                 this.fichaSeleccionada = null;
+
+                // Restaurar cursor al soltar
+                this.canvas.style.cursor = 'default';
 
                 this.actualizarInterfaz();
                 this.verificarFinDeJuego();
@@ -180,3 +199,4 @@ class JuegoPeg {
     }
 }
 
+export default JuegoPeg;

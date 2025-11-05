@@ -50,6 +50,12 @@ window.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+        // Mostrar/ocultar .game-info según gameState
+        const gameInfoEl = document.querySelector('.game-info');
+        if (gameInfoEl) {
+            gameInfoEl.style.display = (gameState === 'PLAYING') ? 'flex' : 'none';
+        }
+
         if (gameState === 'MENU') {
             if (menuController) {
                 menuController.view.draw();

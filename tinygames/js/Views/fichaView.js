@@ -1,4 +1,11 @@
 class FichaView {
+    /**
+    nombre: constructor
+    Descripción: Inicializa la vista de una ficha y prepara la carga de imágenes.
+    Parámetros: ctx (CanvasRenderingContext2D), fichaImageUrl (string)
+    Retorna: void
+    Funcionalidad: Crea objetos Image para estados normal/seleccionado y lanza la carga mediante inicializarImagenes.
+    */
     constructor(ctx, fichaImageUrl) {
         this.ctx = ctx;
         this.imagenesListas = false;
@@ -11,9 +18,12 @@ class FichaView {
     }
 
     /**
-     * Carga las imágenes para los estados normal y seleccionado de la ficha.
-     * Se asegura de que las imágenes estén listas antes de intentar dibujarlas.
-     */
+    nombre: inicializarImagenes
+    Descripción: Carga la(s) imagen(es) necesarias para representar la ficha en sus estados.
+    Parámetros: fichaImageUrl (string)
+    Retorna: void
+    Funcionalidad: Asigna onload/onerror, cuenta imágenes cargadas y marca imagenesListas cuando termina; reutiliza la misma imagen para estado seleccionado.
+    */
     inicializarImagenes(fichaImageUrl) {
         let cargadas = 0;
         const total = 1; // Solo necesitamos cargar una imagen
@@ -33,9 +43,12 @@ class FichaView {
     }
 
     /**
-     * Dibuja una ficha en el canvas utilizando los datos del modelo de ficha.
-     * @param {Ficha} ficha - El objeto modelo de la ficha que contiene su estado (x, y, radio, seleccionada).
-     */
+    nombre: dibujar
+    Descripción: Dibuja la ficha en el canvas aplicando recorte circular, sombra, borde y brillo.
+    Parámetros: ficha (Ficha)
+    Retorna: void
+    Funcionalidad: Guarda el contexto, aplica shadow, crea clip circular, dibuja la imagen o fallback, restaura contexto y dibuja borde/brillo encima.
+    */
     dibujar(ficha) {
         const ctx = this.ctx;
 
@@ -67,11 +80,12 @@ class FichaView {
     }
 
     /**
-     * Dibuja la sombra de la ficha.
-     * @param {number} x - Posición X de la ficha.
-     * @param {number} y - Posición Y de la ficha.
-     * @param {boolean} seleccionada - Si la ficha está seleccionada.
-     */
+    nombre: dibujarSombra
+    Descripción: Configura la sombra del contexto para la ficha.
+    Parámetros: x (number), y (number), seleccionada (boolean)
+    Retorna: void
+    Funcionalidad: Ajusta shadowColor, shadowBlur y offsets según si la ficha está seleccionada.
+    */
     dibujarSombra(x, y, seleccionada) {
         this.ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
         this.ctx.shadowBlur = seleccionada ? 15 : 10;
@@ -80,12 +94,12 @@ class FichaView {
     }
 
     /**
-     * Dibuja el borde de la ficha.
-     * @param {number} x - Posición X de la ficha.
-     * @param {number} y - Posición Y de la ficha.
-     * @param {number} radio - Radio de la ficha.
-     * @param {boolean} seleccionada - Si la ficha está seleccionada.
-     */
+    nombre: dibujarBorde
+    Descripción: Dibuja un borde circular alrededor de la ficha.
+    Parámetros: x (number), y (number), radio (number), seleccionada (boolean)
+    Retorna: void
+    Funcionalidad: Traza un arco con estilo y ancho distinto si la ficha está seleccionada.
+    */
     dibujarBorde(x, y, radio, seleccionada) {
         const ctx = this.ctx;
         ctx.beginPath();
@@ -96,11 +110,12 @@ class FichaView {
     }
 
     /**
-     * Dibuja un efecto de brillo sobre la ficha.
-     * @param {number} x - Posición X de la ficha.
-     * @param {number} y - Posición Y de la ficha.
-     * @param {number} radio - Radio de la ficha.
-     */
+    nombre: dibujarBrillo
+    Descripción: Superpone un gradiente radial para simular brillo en la ficha.
+    Parámetros: x (number), y (number), radio (number)
+    Retorna: void
+    Funcionalidad: Crea un gradiente radial y lo rellena dentro de un arco circular para dar efecto de luz.
+    */
     dibujarBrillo(x, y, radio) {
         const ctx = this.ctx;
         ctx.beginPath();

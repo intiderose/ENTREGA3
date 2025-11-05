@@ -1,4 +1,11 @@
 class MenuController {
+    /**
+    nombre: constructor
+    Descripción: Controlador del menú que conecta modelo y vista y gestiona la interacción del usuario.
+    Parámetros: canvas (HTMLCanvasElement), menuModel (MenuModel), menuView (MenuView), onCharacterSelect (function), initialState (string|undefined)
+    Retorna: void
+    Funcionalidad: Guarda referencias, callback de selección y estado inicial; hace bind de manejador de click.
+    */
     constructor(canvas, menuModel, menuView, onCharacterSelect, initialState) {
         this.canvas = canvas;
         this.model = menuModel;
@@ -9,6 +16,13 @@ class MenuController {
         this.handleMenuClick = this.handleMenuClick.bind(this);
     }
 
+    /**
+    nombre: init
+    Descripción: Inicializa recursos del menú (carga imágenes y configuración inicial).
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Llama a model.loadImages y según el estado inicial configura el botón Play o los items; añade listeners.
+    */
     init() {
         this.model.loadImages(() => {
             // Usar estado inicial si se pasó, sino START
@@ -26,14 +40,35 @@ class MenuController {
         this.addEventListeners();
     }
 
+    /**
+    nombre: addEventListeners
+    Descripción: Registra los listeners necesarios para interacción con el menú.
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Añade listener de click al canvas que delega a handleMenuClick.
+    */
     addEventListeners() {
         this.canvas.addEventListener('click', this.handleMenuClick);
     }
 
+    /**
+    nombre: removeEventListeners
+    Descripción: Remueve los listeners registrados para evitar fugas al cambiar de pantalla.
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Elimina el listener de click del canvas.
+    */
     removeEventListeners() {
         this.canvas.removeEventListener('click', this.handleMenuClick);
     }
 
+    /**
+    nombre: handleMenuClick
+    Descripción: Procesa clicks sobre el canvas para navegar en el menú o seleccionar personaje.
+    Parámetros: event (MouseEvent)
+    Retorna: void
+    Funcionalidad: Calcula posición del click y según el estado (START/CHAR_SELECT) detecta clic en botón Play o en un item; al seleccionar personaje invoca el callback onCharacterSelect.
+    */
     handleMenuClick(event) {
         const rect = this.canvas.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;

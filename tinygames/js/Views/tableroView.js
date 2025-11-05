@@ -1,3 +1,10 @@
+/**
+nombre: constructor
+Descripción: Inicializa la vista del tablero, configura el canvas, carga imágenes y prepara vistas de fichas.
+Parámetros: canvas (HTMLCanvasElement), tableroModel (Tablero), fichaImageUrl (string), homeroImageUrl (string), backgroundImageUrl (string)
+Retorna: void
+Funcionalidad: Guarda referencias a canvas y modelo, actualiza offsets del modelo, crea vistas de fichas, asigna imágenes a fichas y configura la imagen de fondo con su patrón.
+*/
 class TableroView {
     constructor(canvas, tableroModel, fichaImageUrl, homeroImageUrl, backgroundImageUrl) {
         this.canvas = canvas;
@@ -35,6 +42,13 @@ class TableroView {
         // El bucle de render ahora es controlado desde fuera
     }
 
+    /**
+    nombre: asignarImagenesAleatorias
+    Descripción: Asigna a cada ficha del tablero una URL de imagen, mezclando Homero y la selección del jugador.
+    Parámetros: urlSeleccionada (string), urlHomero (string)
+    Retorna: void
+    Funcionalidad: Construye un array con la proporción de imágenes (mitad Homero/mitad seleccionada), aplica Fisher-Yates para mezclarlo y asigna cada URL resultante a cada objeto ficha del modelo.
+    */
     asignarImagenesAleatorias(urlSeleccionada, urlHomero) {
         const totalFichas = this.tablero.fichas.length;
         const mitadFichas = Math.floor(totalFichas / 2);
@@ -64,6 +78,13 @@ class TableroView {
         this.homeroImageUrl = urlHomero;
     }
 
+    /**
+    nombre: iniciarAnimacion
+    Descripción: Inicia el bucle de animación que redibuja el tablero continuamente.
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Define un loop con requestAnimationFrame que invoca dibujar() en cada frame.
+    */
     iniciarAnimacion() {
         const loop = () => {
             this.dibujar();
@@ -72,6 +93,13 @@ class TableroView {
         loop();
     }
 
+    /**
+    nombre: dibujar
+    Descripción: Renderiza el tablero completo: fondo, casillas, hints y fichas (colocando la ficha arrastrada al final).
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Limpia el canvas, dibuja el fondo, recorre la matriz dibujando casillas válidas, muestra hints si existen, dibuja todas las fichas (saltando la arrastrada) y finalmente dibuja la ficha arrastrada para mantenerla en primer plano.
+    */
     dibujar() {
         const ctx = this.ctx;
         const canvas = this.canvas;
@@ -116,10 +144,12 @@ class TableroView {
     }
 
     /**
-     * Dibuja la imagen de fondo en el canvas.
-     * La imagen se escala para cubrir todo el área del canvas manteniendo su relación de aspecto (como background-size: cover).
-     * Esto evita que la imagen se deforme.
-     */
+    nombre: dibujarFondo
+    Descripción: Dibuja la imagen de fondo en el canvas escalada para cubrir todo el área sin deformarse.
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Si la imagen está cargada calcula la escala necesaria (como background-size: cover), centra y dibuja la imagen; si no, rellena con un color de respaldo.
+    */
     dibujarFondo() {
         const ctx = this.ctx;
         const canvas = this.canvas;
@@ -149,6 +179,13 @@ class TableroView {
         }
     }
 
+    /**
+    nombre: dibujarCasilla
+    Descripción: Dibuja una casilla válida del tablero como un círculo decorado (sombra, relleno y borde).
+    Parámetros: fila (number), columna (number)
+    Retorna: void
+    Funcionalidad: Calcula la posición del centro de la casilla usando el modelo, aplica sombra, dibuja un círculo de fondo y traza el borde.
+    */
     dibujarCasilla(fila, columna) {
         let pos = this.tablero.obtenerPosicionCasilla(fila, columna);
 
@@ -170,6 +207,13 @@ class TableroView {
         this.ctx.shadowBlur = 0;
     }
 
+    /**
+    nombre: dibujarHints
+    Descripción: Dibuja indicadores animados en las casillas destino de movimientos válidos.
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Incrementa un contador de animación, calcula una escala oscilante y para cada movimiento válido dibuja un icono y un anillo con efectos de transparencia y trazo.
+    */
     dibujarHints() {
         this.animacionHints += 0.1;
         let escala = 1 + Math.sin(this.animacionHints) * 0.2;

@@ -1,10 +1,24 @@
 class MenuView {
+    /**
+    nombre: constructor
+    Descripción: Inicializa la vista del menú con referencia al canvas y modelo.
+    Parámetros: canvas (HTMLCanvasElement), menuModel (MenuModel)
+    Retorna: void
+    Funcionalidad: Guarda contexto 2D y el modelo para poder renderizar según su estado y datos.
+    */
     constructor(canvas, menuModel) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.model = menuModel;
     }
 
+    /**
+    nombre: draw
+    Descripción: Dibuja todo el contenido del menú en el canvas según el estado del modelo (START o CHAR_SELECT).
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Dibuja fondo (imagen o color), título opcional, controla visibilidad de UI fuera del canvas y renderiza botón Play o items de selección.
+    */
     draw() {
         // Fondo: Usar imagen si está cargada, sino un color de respaldo
         const backgroundImage = this.model.images.background;
@@ -205,7 +219,13 @@ class MenuView {
         }
     }
 
-    // Helper: dibujar rectángulo con esquinas redondeadas (no muta estado del modelo)
+    /**
+    nombre: _roundRect
+    Descripción: Dibuja un rectángulo con esquinas redondeadas en el contexto (helper).
+    Parámetros: ctx (CanvasRenderingContext2D), x (number), y (number), width (number), height (number), radius (number|object)
+    Retorna: void
+    Funcionalidad: Construye el path de un rectángulo con esquinas redondeadas y lo deja listo para fill/stroke sin mutar el modelo.
+    */
     _roundRect(ctx, x, y, width, height, radius) {
         if (typeof radius === 'number') radius = { tl: radius, tr: radius, br: radius, bl: radius };
         ctx.beginPath();

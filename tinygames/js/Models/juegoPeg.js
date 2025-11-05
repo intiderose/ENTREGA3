@@ -1,5 +1,12 @@
 import Tablero from './tablero.js';
 class JuegoPeg {
+    /**
+    nombre: constructor
+    Descripción: Inicializa el juego Peg Solitaire (modelo Tablero, estado y bucles de UI).
+    Parámetros: canvas (HTMLCanvasElement)
+    Retorna: void
+    Funcionalidad: Crea el tablero, establece estados de tiempo, registra eventos, inicia timer y animación y actualiza UI inicial.
+    */
     constructor(canvas) {
         this.canvas = canvas;
         this.tablero = new Tablero(canvas);
@@ -15,7 +22,22 @@ class JuegoPeg {
         this.actualizarInterfaz();
     }
 
+    /**
+    nombre: inicializarEventos
+    Descripción: Registra los listeners de mouse necesarios para interacción (mousedown/mousemove/mouseup).
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Añade listeners al canvas; dentro de cada addEventListener se usan callbacks que gestionan selección, arrastre y suelta de fichas.
+    */
     inicializarEventos() {
+        // mousedown handler: seleccionar/iniciar arrastre
+        /**
+        nombre: mousedown callback
+        Descripción: Maneja la selección de ficha y cálculo de movimientos válidos al presionar el botón del ratón.
+        Parámetros: e (MouseEvent)
+        Retorna: void
+        Funcionalidad: Calcula posición relativa del mouse, obtiene ficha si existe, inicia arrastre centrando la ficha bajo el cursor y solicita movimientos válidos al tablero.
+        */
         this.canvas.addEventListener('mousedown', (e) => {
             if (!this.juegoActivo) return;
 
@@ -45,6 +67,14 @@ class JuegoPeg {
             }
         });
 
+        // mousemove handler: actualizar arrastre o cursor
+        /**
+        nombre: mousemove callback (arrastre)
+        Descripción: Actualiza la posición de la ficha mientras se arrastra o cambia el cursor si hay ficha bajo el puntero.
+        Parámetros: e (MouseEvent)
+        Retorna: void
+        Funcionalidad: Si hay una ficha en arrastre actualiza su posición según el ratón; si no, determina si debe mostrar cursor 'grab'.
+        */
         this.canvas.addEventListener('mousemove', (e) => {
             if (!this.juegoActivo) return;
 
@@ -66,7 +96,14 @@ class JuegoPeg {
             }
         });
 
-        // Mouseup
+        // mouseup handler: soltar ficha e intentar movimiento
+        /**
+        nombre: mouseup callback
+        Descripción: Intenta completar el movimiento al soltar el botón del ratón; gestiona éxito/fracaso.
+        Parámetros: e (MouseEvent)
+        Retorna: void
+        Funcionalidad: Calcula la casilla más cercana al punto de suelta, pide al tablero realizar movimiento y restaura posición si falló; actualiza interfaz y verifica fin.
+        */
         this.canvas.addEventListener('mouseup', (e) => {
             if (!this.juegoActivo) return;
 
@@ -98,7 +135,14 @@ class JuegoPeg {
             }
         });
 
-        // Cursor dinámico
+        // cursor dinámico adicional (puede solaparse con mousemove anterior)
+        /**
+        nombre: mousemove callback (cursor dinámico)
+        Descripción: Actualiza el cursor dependiendo de si hay ficha bajo el puntero.
+        Parámetros: e (MouseEvent)
+        Retorna: void
+        Funcionalidad: Recalcula posición del mouse y asigna 'grab' o 'default' según presencia de ficha.
+        */
         this.canvas.addEventListener('mousemove', (e) => {
             if (!this.juegoActivo) return;
 
@@ -111,6 +155,13 @@ class JuegoPeg {
         });
     }
 
+    /**
+    nombre: iniciarTimer
+    Descripción: Inicia el contador que actualiza tiempo transcurrido cada segundo.
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Crea un interval que calcula tiempo transcurrido desde tiempoInicio y actualiza el DOM mediante actualizarTimer.
+    */
     iniciarTimer() {
         this.intervaloTimer = setInterval(() => {
             if (this.juegoActivo) {
@@ -120,6 +171,13 @@ class JuegoPeg {
         }, 1000);
     }
 
+    /**
+    nombre: actualizarTimer
+    Descripción: Formatea y muestra el tiempo transcurrido en formato MM:SS.
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Calcula minutos y segundos desde tiempoTranscurrido y actualiza elemento con id 'timer'.
+    */
     actualizarTimer() {
         let minutos = Math.floor(this.tiempoTranscurrido / 60);
         let segundos = this.tiempoTranscurrido % 60;
@@ -132,6 +190,13 @@ class JuegoPeg {
         }
     }
 
+    /**
+    nombre: actualizarInterfaz
+    Descripción: Actualiza el contador de fichas del DOM con el valor del modelo.
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Llama a contarFichas y escribe el resultado en el elemento 'fichas-count'.
+    */
     actualizarInterfaz() {
         let fichasCount = this.tablero.contarFichas();
         let elementoFichas = document.getElementById('fichas-count');
@@ -140,12 +205,26 @@ class JuegoPeg {
         }
     }
 
+    /**
+    nombre: verificarFinDeJuego
+    Descripción: Verifica si el tablero tiene movimientos disponibles y finaliza si no hay.
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Usa hayMovimientosPosibles del modelo; si devuelve false llama a finalizarJuego.
+    */
     verificarFinDeJuego() {
         if (!this.tablero.hayMovimientosPosibles()) {
             this.finalizarJuego();
         }
     }
 
+    /**
+    nombre: finalizarJuego
+    Descripción: Detiene el juego y muestra pantalla de resultado con estadísticas.
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Limpia interval, calcula fichas restantes y muestra mensaje de victoria o finalización en el DOM.
+    */
     finalizarJuego() {
         this.juegoActivo = false;
         clearInterval(this.intervaloTimer);
@@ -166,12 +245,26 @@ class JuegoPeg {
         gameOverDiv.classList.remove('hidden');
     }
 
+    /**
+    nombre: formatearTiempo
+    Descripción: Convierte tiempoTranscurrido a cadena MM:SS.
+    Parámetros: ninguno
+    Retorna: string
+    Funcionalidad: Calcula minutos y segundos y devuelve texto con ceros a la izquierda cuando corresponda.
+    */
     formatearTiempo() {
         let minutos = Math.floor(this.tiempoTranscurrido / 60);
         let segundos = this.tiempoTranscurrido % 60;
         return (minutos < 10 ? '0' : '') + minutos + ':' + (segundos < 10 ? '0' : '') + segundos;
     }
 
+    /**
+    nombre: reiniciar
+    Descripción: Reinicia el estado del juego a su configuración inicial.
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Reinicia el tablero, estados de tiempo, reinicia timer y oculta panel de game over.
+    */
     reiniciar() {
         this.tablero.reiniciar();
         this.fichaSeleccionada = null;
@@ -190,6 +283,13 @@ class JuegoPeg {
         }
     }
 
+    /**
+    nombre: iniciarAnimacion
+    Descripción: Inicia el bucle de animación que dibuja el tablero continuamente.
+    Parámetros: ninguno
+    Retorna: void
+    Funcionalidad: Usa requestAnimationFrame para llamar a tablero.dibujar en cada frame.
+    */
     iniciarAnimacion() {
         const loop = () => {
             this.tablero.dibujar();

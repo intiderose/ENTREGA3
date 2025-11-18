@@ -14,61 +14,57 @@
 /* PARALLAX BACKGROUNDS - 4 capas */
 .flappyeagle-embed .fe-bg-layer {
     position: absolute;
-    width: 100%;
+    width: 100.1%; /* Ligeramente más ancho para evitar gaps de redondeo */
     height: 100%;
     top: 0;
     left: 0;
-    background-repeat: repeat-x;
-    background-size: cover;
+    background-repeat: no-repeat; /* No-repeat es clave para esta técnica */
+    background-size: 100% 100%; /* Asegura que la imagen ocupe todo el div */
+    animation-name: fe-scroll-bg;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+.flappyeagle-embed .fe-bg-layer--copy {
+    left: 100%; /* Posiciona la copia justo a la derecha de la original */
 }
 
 /* CAPA 1: más lejana (más lenta) */
-.flappyeagle-embed #fe-bg-1 {
+.flappyeagle-embed #fe-bg-1, .flappyeagle-embed #fe-bg-1-copy {
     background-image: url('../assets/1.png');
-    animation: fe-parallax1 60s infinite linear;
+    animation-duration: 60s;
     z-index: 1;
 }
 
 /* CAPA 2 */
-.flappyeagle-embed #fe-bg-2 {
+.flappyeagle-embed #fe-bg-2, .flappyeagle-embed #fe-bg-2-copy {
     background-image: url('../assets/2.png');
-    animation: fe-parallax2 40s infinite linear;
+    animation-duration: 40s;
     z-index: 2;
 }
 
 /* CAPA 3 */
-.flappyeagle-embed #fe-bg-3 {
+.flappyeagle-embed #fe-bg-3, .flappyeagle-embed #fe-bg-3-copy {
     background-image: url('../assets/3.png');
-    animation: fe-parallax3 20s infinite linear;
+    animation-duration: 20s;
     z-index: 3;
 }
 
 /* CAPA 4: más cercana (más rápida) */
-.flappyeagle-embed #fe-bg-4 {
+.flappyeagle-embed #fe-bg-4, .flappyeagle-embed #fe-bg-4-copy {
     background-image: url('../assets/4.png');
-    animation: fe-parallax4 10s infinite linear;
+    animation-duration: 10s;
     z-index: 4;
 }
 
-/* Animaciones */
-@keyframes fe-parallax1 {
-    0% {background-position-x: 0; }
-    100% {background-position-x: -1920px; }
-}
-
-@keyframes fe-parallax2 {
-    0% {background-position-x: 0; }
-    100% {background-position-x: -1920px; }
-}
-
-@keyframes fe-parallax3 {
-    0% {background-position-x: 0; }
-    100% {background-position-x: -1920px; }
-}
-
-@keyframes fe-parallax4 {
-    0% {background-position-x: 0; }
-    100% {background-position-x: -1920px; }
+/* Animación única para el scroll infinito */
+@keyframes fe-scroll-bg {
+    from {
+        transform: translateX(0%);
+    }
+    to {
+        transform: translateX(-100%);
+    }
 }
 
 /* PÁJARO */
@@ -238,4 +234,3 @@
     margin: 10px 0;
     color: #666;
 }
-

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Game</title>
+    <link rel="stylesheet" href="css/pajaro.css">
+</head>
+<body>
+<div id="game-container">
+    <!-- Capas de parallax -->
+    <div class="bg-layer" id="bg-sky"></div>
+    <div class="bg-layer" id="bg-mountains"></div>
+    <div class="bg-layer" id="bg-clouds"></div>
+    <div class="bg-layer" id="bg-ground"></div>
+
+    <!-- Nubes animadas -->
+    <div class="cloud" style="top: 100px; left: 200px; animation-delay: 0s;"></div>
+    <div class="cloud" style="top: 150px; left: 600px; animation-delay: 1s;"></div>
+    <div class="cloud" style="top: 80px; left: 1000px; animation-delay: 2s;"></div>
+
+    <!-- Pájaro -->
+    <div id="bird">
+        <div class="bird-body">
+            <div class="bird-wing"></div>
+            <div class="bird-eye"></div>
+        </div>
+    </div>
+
+    <!-- UI -->
+    <div id="score">Puntos: 0</div>
+    <div id="timer">Tiempo: 60s</div>
+
+    <!-- Pantalla de Game Over -->
+    <div id="game-over">
+        <h1>¡Juego Terminado!</h1>
+        <p id="final-score"></p>
+        <p id="final-time"></p>
+        <button onclick="resetGame()">Jugar de Nuevo</button>
+    </div>
+
+    <!-- Instrucciones -->
+    <div id="instructions">
+        <h2>🎮 Instrucciones</h2>
+        <p>Presiona <strong>ESPACIO</strong> para volar</p>
+        <p>⭐ Recoge estrellas para sumar puntos</p>
+        <p>🚫 Evita las tuberías verdes</p>
+        <p>⏱️ Sobrevive 60 segundos para ganar</p>
+        <p style="margin-top: 20px;"><strong>Presiona ESPACIO para comenzar</strong></p>
+    </div>
+</div>
+
+<script src="js/pajaro.js"></script>
+</body>
+</html>

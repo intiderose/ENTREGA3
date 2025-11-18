@@ -1,0 +1,241 @@
+/* Estilos para el juego Flappy Eagle, encapsulados para evitar conflictos. */
+
+.flappyeagle-embed {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+}
+
+/* PARALLAX BACKGROUNDS - 4 capas */
+.flappyeagle-embed .fe-bg-layer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-repeat: repeat-x;
+    background-size: cover;
+}
+
+/* CAPA 1: más lejana (más lenta) */
+.flappyeagle-embed #fe-bg-1 {
+    background-image: url('../assets/1.png');
+    animation: fe-parallax1 60s infinite linear;
+    z-index: 1;
+}
+
+/* CAPA 2 */
+.flappyeagle-embed #fe-bg-2 {
+    background-image: url('../assets/2.png');
+    animation: fe-parallax2 40s infinite linear;
+    z-index: 2;
+}
+
+/* CAPA 3 */
+.flappyeagle-embed #fe-bg-3 {
+    background-image: url('../assets/3.png');
+    animation: fe-parallax3 20s infinite linear;
+    z-index: 3;
+}
+
+/* CAPA 4: más cercana (más rápida) */
+.flappyeagle-embed #fe-bg-4 {
+    background-image: url('../assets/4.png');
+    animation: fe-parallax4 10s infinite linear;
+    z-index: 4;
+}
+
+/* Animaciones */
+@keyframes fe-parallax1 {
+    0% {background-position-x: 0; }
+    100% {background-position-x: -1920px; }
+}
+
+@keyframes fe-parallax2 {
+    0% {background-position-x: 0; }
+    100% {background-position-x: -1920px; }
+}
+
+@keyframes fe-parallax3 {
+    0% {background-position-x: 0; }
+    100% {background-position-x: -1920px; }
+}
+
+@keyframes fe-parallax4 {
+    0% {background-position-x: 0; }
+    100% {background-position-x: -1920px; }
+}
+
+/* PÁJARO */
+.flappyeagle-embed #fe-bird {
+    z-index: 2000;
+    position: absolute;
+    width: 40px;     /* ancho de 1 frame */
+    height: 41px;    /* alto de 1 frame */
+    background-image: url('../assets/eagle-attack.png');
+    background-size: 160px 41px; /* tamaño TOTAL del spritesheet */
+    animation: fe-bird-flap 0.4s steps(4) infinite;
+}
+
+/* Animación: 4 frames → mover -160px */
+@keyframes fe-bird-flap {
+    from { background-position: 0 0; }
+    to   { background-position: -160px 0; }
+}
+
+
+/* EXPLOSIÓN */
+@keyframes fe-explode {
+    0% { transform: scale(1) rotate(0deg); opacity: 1; }
+    50% { transform: scale(1.5) rotate(180deg); opacity: 0.5; }
+    100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+
+.flappyeagle-embed .fe-exploding {
+    animation: fe-explode 0.5s ease-out forwards;
+}
+
+/* OBSTÁCULOS (tuberías) */
+.flappyeagle-embed .fe-pipe {
+    position: absolute;
+    width: 80px;
+    background: linear-gradient(to right, #228B22, #32CD32, #228B22);
+    z-index: 15;
+    border: 3px solid #006400;
+    border-radius: 5px;
+}
+
+.flappyeagle-embed .fe-pipe-top {
+    top: 0;
+}
+
+.flappyeagle-embed .fe-pipe-bottom {
+    bottom: 100px;
+}
+
+/* BONUS (estrellas) */
+.flappyeagle-embed .fe-bonus {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    z-index: 15;
+    animation: fe-rotate-bonus 2s linear infinite, fe-pulse 1s ease-in-out infinite;
+}
+
+@keyframes fe-rotate-bonus {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fe-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.flappyeagle-embed .fe-star {
+    width: 40px;
+    height: 40px;
+    background: gold;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+/* PARTÍCULAS DE COLECCIÓN */
+@keyframes fe-collect-particle {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+.flappyeagle-embed .fe-particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: gold;
+    border-radius: 50%;
+    animation: fe-collect-particle 0.5s ease-out forwards;
+    z-index: 25;
+}
+
+/* UI */
+.flappyeagle-embed #fe-score {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 36px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 3px 3px 5px black;
+    z-index: 30;
+}
+
+.flappyeagle-embed #fe-timer {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px black;
+    z-index: 30;
+}
+
+.flappyeagle-embed #fe-game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    z-index: 40;
+    display: none;
+}
+
+.flappyeagle-embed #fe-game-over h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.flappyeagle-embed #fe-game-over button {
+    font-size: 24px;
+    padding: 15px 30px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.flappyeagle-embed #fe-game-over button:hover {
+    background: #45a049;
+}
+
+.flappyeagle-embed #fe-instructions {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    z-index: 40;
+}
+
+.flappyeagle-embed #fe-instructions h2 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.flappyeagle-embed #fe-instructions p {
+    margin: 10px 0;
+    color: #666;
+}
+

@@ -110,63 +110,19 @@
         /* PÁJARO */
         #bird {
             position: absolute;
-            width: 60px;
-            height: 50px;
-            left: 100px;
-            top: 250px;
-            z-index: 20;
-            transition: transform 0.1s;
+            width: 40px;     /* ancho de 1 frame */
+            height: 41px;    /* alto de 1 frame */
+            background-image: url('../assets/eagle-attack.png');
+            background-size: 160px 41px; /* tamaño TOTAL del spritesheet */
+            animation: bird-flap 0.4s steps(4) infinite;
         }
 
-        .bird-body {
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 30% 30%, #FFD700, #FFA500);
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            position: relative;
-            animation: idle 0.5s ease-in-out infinite;
+        /* Animación: 4 frames → mover -160px */
+        @keyframes bird-flap {
+            from { background-position: 0 0; }
+            to   { background-position: -160px 0; }
         }
 
-        .bird-wing {
-            position: absolute;
-            width: 30px;
-            height: 20px;
-            background: #FF8C00;
-            border-radius: 50% 50% 0 0;
-            top: 20px;
-            left: 15px;
-        }
-
-        .bird-eye {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: black;
-            border-radius: 50%;
-            top: 15px;
-            left: 40px;
-        }
-
-        /* ANIMACIÓN ALETEO */
-        @keyframes idle {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(-5deg); }
-        }
-
-        @keyframes flap {
-            0% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-5px) rotate(-15deg); }
-            100% { transform: translateY(0) rotate(0deg); }
-        }
-
-        .flapping .bird-wing {
-            animation: wing-flap 0.3s ease-in-out;
-        }
-
-        @keyframes wing-flap {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(-45deg); }
-        }
 
         /* EXPLOSIÓN */
         @keyframes explode {

@@ -43,18 +43,25 @@
     z-index: 2;
 }
 
+/* CAPA 5*/
+.flappyeagle-embed #fe-bg-5, .flappyeagle-embed #fe-bg-5-copy {
+    background-image: url('../assets/5.png');
+    animation-duration: 32s;
+    z-index: 3;
+}
+
 /* CAPA 3 */
 .flappyeagle-embed #fe-bg-3, .flappyeagle-embed #fe-bg-3-copy {
     background-image: url('../assets/3.png');
     animation-duration: 20s;
-    z-index: 3;
+    z-index: 4;
 }
 
 /* CAPA 4: más cercana (más rápida) */
 .flappyeagle-embed #fe-bg-4, .flappyeagle-embed #fe-bg-4-copy {
     background-image: url('../assets/4.png');
     animation-duration: 10s;
-    z-index: 4;
+    z-index: 5;
 }
 
 /* Animación única para el scroll infinito */

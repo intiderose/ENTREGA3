@@ -187,7 +187,6 @@ window.FlappyEagle = (() => {
 
         let bonusElement = document.createElement('div');
         bonusElement.className = 'fe-bonus';
-        bonusElement.innerHTML = '<div class="fe-star"></div>';
         bonusElement.style.left = state.containerWidth + 'px';
         bonusElement.style.top = (Math.random() * (state.containerHeight - 250) + 50) + 'px';
         state.container.appendChild(bonusElement);
@@ -343,4 +342,3 @@ window.FlappyEagle = (() => {
         destroy
     };
 })();
-

@@ -121,30 +121,20 @@
     bottom: 100px;
 }
 
-/* BONUS (estrellas) */
+/* BONUS (gemas) */
 .flappyeagle-embed .fe-bonus {
     position: absolute;
-    width: 40px;
-    height: 40px;
+    width: 30px;  /* Ancho de 1 frame (15px) escalado x2 */
+    height: 26px; /* Alto de 1 frame (13px) escalado x2 */
     z-index: 15;
-    animation: fe-rotate-bonus 2s linear infinite, fe-pulse 1s ease-in-out infinite;
+    background-image: url('../assets/gem.png');
+    background-size: 150px 26px; /* Tamaño total del spritesheet (75x13) escalado x2 */
+    animation: fe-gem-spin 0.7s steps(5) infinite;
 }
 
-@keyframes fe-rotate-bonus {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-@keyframes fe-pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-}
-
-.flappyeagle-embed .fe-star {
-    width: 40px;
-    height: 40px;
-    background: gold;
-    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+@keyframes fe-gem-spin {
+    from { background-position: 0 0; }
+    to   { background-position: -150px 0; } /* Mueve 5 frames (5 * 30px) */
 }
 
 /* PARTÍCULAS DE COLECCIÓN */

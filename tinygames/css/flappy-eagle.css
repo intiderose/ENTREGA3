@@ -78,17 +78,17 @@
 .flappyeagle-embed #fe-bird {
     z-index: 2000;
     position: absolute;
-    width: 40px;     /* ancho de 1 frame */
-    height: 41px;    /* alto de 1 frame */
+    width: 50px;     /* ancho de 1 frame (40px * 1.25) */
+    height: 51.25px; /* alto de 1 frame (41px * 1.25) */
     background-image: url('../assets/eagle-attack.png');
-    background-size: 160px 41px; /* tamaño TOTAL del spritesheet */
+    background-size: 200px 51.25px; /* tamaño TOTAL del spritesheet (160px*1.25 x 41px*1.25) */
     animation: fe-bird-flap 0.4s steps(4) infinite;
 }
 
-/* Animación: 4 frames → mover -160px */
+/* Animación: 4 frames → mover -200px (50px * 4) */
 @keyframes fe-bird-flap {
     from { background-position: 0 0; }
-    to   { background-position: -160px 0; }
+    to   { background-position: -200px 0; }
 }
 
 
@@ -124,11 +124,11 @@
 /* BONUS (gemas) */
 .flappyeagle-embed .fe-bonus {
     position: absolute;
-    width: 30px;  /* Ancho de 1 frame (15px) escalado x2 */
-    height: 26px; /* Alto de 1 frame (13px) escalado x2 */
+    width: 37.5px;  /* Ancho de 1 frame (30px * 1.25) */
+    height: 32.5px; /* Alto de 1 frame (26px * 1.25) */
     z-index: 15;
     background-image: url('../assets/gem.png');
-    background-size: 150px 26px; /* Tamaño total del spritesheet (75x13) escalado x2 */
+    background-size: 187.5px 32.5px; /* Tamaño total del spritesheet (150px*1.25 x 26px*1.25) */
     animation:
         fe-gem-spin 0.7s steps(5) infinite,
         fe-gem-float 1.4s ease-in-out infinite;
@@ -136,7 +136,7 @@
 
 @keyframes fe-gem-spin {
     from { background-position: 0 0; }
-    to   { background-position: -150px 0; } /* Mueve 5 frames (5 * 30px) */
+    to   { background-position: -187.5px 0; } /* Mueve 5 frames (5 * 37.5px) */
 }
 
 /* Nueva animación para flotar */

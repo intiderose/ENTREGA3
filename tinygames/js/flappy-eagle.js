@@ -223,29 +223,32 @@ window.FlappyEagle = (() => {
 
     function explodeBird() {
 
-        // Detener el game loop AHORA
         clearInterval(state.gameInterval);
         state.gameRunning = false;
 
-        // Quitar completamente animación de aleteo
         state.bird.style.animation = 'none';
         state.bird.style.removeProperty('animation');
         state.bird.style.transform = 'none';
 
-        // Forzar reflow (sin esto la animación no reinicia)
         void state.bird.offsetWidth;
 
-        // Ajustar tamaño
         state.bird.style.width = '50px';
         state.bird.style.height = '51.25px';
 
-        // Cambiar sprite
         state.bird.style.backgroundImage = "url('../assets/enemy-deadth.png')";
         state.bird.style.backgroundSize = '300px 51.25px';
 
-        // ANIMACIÓN DE EXPLOSIÓN
+        // Activamos la explosión
         state.bird.style.animation = 'fe-bird-explode 0.6s steps(6) forwards';
+
+        // Cuando la animación termine → hacer invisible el pájaro
+        state.bird.addEventListener('animationend', handleExplosionEnd, { once: true });
     }
+
+    function handleExplosionEnd() {
+        state.bird.style.opacity = '0';
+    }
+
 
 
 
@@ -312,6 +315,8 @@ window.FlappyEagle = (() => {
 
         // Quitar cualquier rastro de explosión
         state.bird.classList.remove('fe-exploding');
+
+        state.bird.style.opacity = '1'; // volver a verlo
 
         // Limpiar elementos del juego
         state.container.querySelectorAll('.fe-pipe, .fe-bonus, .fe-particle').forEach(el => el.remove());

@@ -232,11 +232,11 @@ window.FlappyEagle = (() => {
 
         void state.bird.offsetWidth;
 
-        state.bird.style.width = '50px';
-        state.bird.style.height = '51.25px';
+        state.bird.style.width = '64px';
+        state.bird.style.height = '65.6px';
 
         state.bird.style.backgroundImage = "url('../assets/enemy-deadth.png')";
-        state.bird.style.backgroundSize = '300px 51.25px';
+        state.bird.style.backgroundSize = '384px 65.6px';
 
         // Activamos la explosión
         state.bird.style.animation = 'fe-bird-explode 0.6s steps(6) forwards';
@@ -303,9 +303,9 @@ window.FlappyEagle = (() => {
 
         // --- RESTAURAR SPRITE ORIGINAL DEL PÁJARO ---
         state.bird.style.backgroundImage = "url('../assets/eagle-attack.png')";
-        state.bird.style.backgroundSize = "200px 51.25px"; // tamaño original de 4 frames
-        state.bird.style.width = "50px";
-        state.bird.style.height = "51.25px";
+        state.bird.style.backgroundSize = "256px 65.6px"; // tamaño original de 4 frames
+        state.bird.style.width = "64px";
+        state.bird.style.height = "65.6px";
 
         // Restaurar animación normal del pájaro
         state.bird.style.animation = "fe-bird-flap 0.4s steps(4) infinite";

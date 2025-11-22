@@ -93,14 +93,17 @@
 
 
 /* EXPLOSIÓN */
-@keyframes fe-explode {
-    0% { transform: scale(1) rotate(0deg); opacity: 1; }
-    50% { transform: scale(1.5) rotate(180deg); opacity: 0.5; }
-    100% { transform: scale(0) rotate(360deg); opacity: 0; }
+.flappyeagle-embed .fe-exploding {
+    /* Cambia el sprite y la animación al morir */
+    background-image: url('../assets/enemy-deadth.png');
+    background-size: 300px 51.25px; /* 6 frames * 50px ancho, 41px*1.25 alto */
+    animation: fe-bird-explode 0.6s steps(6) forwards;
+    transform: none; /* Anula la rotación del pájaro al morir */
 }
 
-.flappyeagle-embed .fe-exploding {
-    animation: fe-explode 0.5s ease-out forwards;
+@keyframes fe-bird-explode {
+    from { background-position: 0 0; }
+    to   { background-position: -300px 0; } /* Mueve 6 frames (6 * 50px) */
 }
 
 /* OBSTÁCULOS (tuberías) */

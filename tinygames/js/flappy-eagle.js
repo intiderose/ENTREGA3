@@ -111,6 +111,7 @@ window.FlappyEagle = (() => {
             state.birdVelocity = 0;
         }
         if (state.birdY > state.containerHeight - 150) { // Ajustado para el suelo
+            explodeBird();
             endGame('¡Tocaste el suelo!');
         }
 
@@ -118,7 +119,11 @@ window.FlappyEagle = (() => {
         moveElements(state.pipes, (pipe) => {
             if (checkCollision(state.bird, pipe.element)) {
                 explodeBird();
-                endGame('¡Chocaste con una tubería!');
+
+                // Esperar a que termine la animación de explosión
+                setTimeout(() => {
+                    endGame('¡Chocaste con una tubería!');
+                }, 650);
             }
         }, (pipe) => {
             // Solo sumar puntos al pasar la tubería superior
@@ -217,8 +222,32 @@ window.FlappyEagle = (() => {
     }
 
     function explodeBird() {
-        state.bird.classList.add('fe-exploding');
+
+        // Detener el game loop AHORA
+        clearInterval(state.gameInterval);
+        state.gameRunning = false;
+
+        // Quitar completamente animación de aleteo
+        state.bird.style.animation = 'none';
+        state.bird.style.removeProperty('animation');
+        state.bird.style.transform = 'none';
+
+        // Forzar reflow (sin esto la animación no reinicia)
+        void state.bird.offsetWidth;
+
+        // Ajustar tamaño
+        state.bird.style.width = '50px';
+        state.bird.style.height = '51.25px';
+
+        // Cambiar sprite
+        state.bird.style.backgroundImage = "url('../assets/enemy-deadth.png')";
+        state.bird.style.backgroundSize = '300px 51.25px';
+
+        // ANIMACIÓN DE EXPLOSIÓN
+        state.bird.style.animation = 'fe-bird-explode 0.6s steps(6) forwards';
     }
+
+
 
     function checkCollision(element1, element2) {
         const rect1 = element1.getBoundingClientRect();
@@ -244,8 +273,7 @@ window.FlappyEagle = (() => {
     }
 
     function endGame(message, won = false) {
-        if (!state.gameRunning) return; // Evitar múltiples llamadas
-        state.gameRunning = false;
+        // Esta función ahora se llama después de la animación de explosión
         clearInterval(state.gameInterval);
         clearInterval(state.pipeInterval);
         clearInterval(state.bonusInterval);
@@ -269,8 +297,23 @@ window.FlappyEagle = (() => {
         state.gameStarted = false;
         state.instructions.style.display = 'block';
         state.gameOverScreen.style.display = 'none';
-        state.bird.classList.remove('fe-exploding');
+
+        // --- RESTAURAR SPRITE ORIGINAL DEL PÁJARO ---
+        state.bird.style.backgroundImage = "url('../assets/eagle-attack.png')";
+        state.bird.style.backgroundSize = "200px 51.25px"; // tamaño original de 4 frames
+        state.bird.style.width = "50px";
+        state.bird.style.height = "51.25px";
+
+        // Restaurar animación normal del pájaro
+        state.bird.style.animation = "fe-bird-flap 0.4s steps(4) infinite";
+
+        // Restaurar rotación
         state.bird.style.transform = 'rotate(0deg)';
+
+        // Quitar cualquier rastro de explosión
+        state.bird.classList.remove('fe-exploding');
+
+        // Limpiar elementos del juego
         state.container.querySelectorAll('.fe-pipe, .fe-bonus, .fe-particle').forEach(el => el.remove());
 
         // Resetear variables principales
@@ -282,6 +325,7 @@ window.FlappyEagle = (() => {
         updateTimer();
         state.bird.style.top = state.birdY + 'px';
     }
+
 
     // --- MÉTODOS PÚBLICOS ---
     function init(containerElement) {

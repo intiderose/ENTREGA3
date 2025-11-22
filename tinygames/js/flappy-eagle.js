@@ -110,10 +110,15 @@ window.FlappyEagle = (() => {
             state.birdY = 0;
             state.birdVelocity = 0;
         }
-        if (state.birdY > state.containerHeight - 150) { // Ajustado para el suelo
+        // --- Detectar suelo real basado en la altura del piso (100px) ---
+        const GROUND_HEIGHT = 100; // del CSS: .fe-pipe-bottom { bottom: 100px; }
+
+        if (state.birdY + state.bird.offsetHeight >= state.containerHeight ) {
             explodeBird();
             endGame('¡Tocaste el suelo!');
         }
+
+
 
         // Mover tuberías y chequear colisiones
         moveElements(state.pipes, (pipe) => {
@@ -166,26 +171,32 @@ window.FlappyEagle = (() => {
     function createPipe() {
         if (!state.gameRunning) return;
 
+        const GROUND_HEIGHT = 0; // del CSS
         let gap = 200;
         let minHeight = 50;
-        let maxHeight = state.containerHeight - gap - 150;
+        let maxHeight = state.containerHeight - GROUND_HEIGHT - gap - 50;
+
         let topHeight = Math.random() * (maxHeight - minHeight) + minHeight;
 
+        // --- Tubería superior ---
         let pipeTop = document.createElement('div');
         pipeTop.className = 'fe-pipe fe-pipe-top';
         pipeTop.style.left = state.containerWidth + 'px';
         pipeTop.style.height = topHeight + 'px';
         state.container.appendChild(pipeTop);
 
+        // --- Tubería inferior ---
         let pipeBottom = document.createElement('div');
         pipeBottom.className = 'fe-pipe fe-pipe-bottom';
         pipeBottom.style.left = state.containerWidth + 'px';
-        pipeBottom.style.height = (state.containerHeight - topHeight - gap - 100) + 'px';
+        pipeBottom.style.bottom = GROUND_HEIGHT + 'px';
+        pipeBottom.style.height = (state.containerHeight - GROUND_HEIGHT - topHeight - gap) + 'px';
         state.container.appendChild(pipeBottom);
 
         state.pipes.push({ element: pipeTop });
         state.pipes.push({ element: pipeBottom });
     }
+
 
     function createBonus() {
         if (!state.gameRunning) return;

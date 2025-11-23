@@ -89,9 +89,14 @@ window.FlappyEagle = (() => {
         state.bonusInterval = setInterval(createBonus, 3000);
         state.timerInterval = setInterval(updateTime, 1000);
 
-        // **NUEVO:** Iniciar las animaciones CSS
+        // **NUEVO:** Iniciar las animaciones CSS DE LAS TUBERÍAS Y EL PARALLAX
         state.container.querySelectorAll('.fe-pipe').forEach(pipe => {
             pipe.style.animationPlayState = 'running';
+        });
+
+        // **CLAVE:** Reiniciar las animaciones del Parallax
+        state.container.querySelectorAll('.fe-bg-layer').forEach(bg => {
+            bg.style.animationPlayState = 'running';
         });
     }
 
@@ -130,9 +135,14 @@ window.FlappyEagle = (() => {
         // --- Detectar suelo real basado en la altura del piso (100px) ---
         const GROUND_HEIGHT = 100; // del CSS: .fe-pipe-bottom { bottom: 100px; }
 
-        if (state.birdY + state.bird.offsetHeight >= state.containerHeight ) {
+        if (state.birdY + state.bird.offsetHeight >= state.containerHeight - GROUND_HEIGHT) {
+            // **PASO CLAVE: CONGELAR AQUÍ**
+            freezeMovingElements();
+
             explodeBird();
             endGame('¡Tocaste el suelo!');
+            // No es necesario 'return' aquí, el 'gameLoop' se detendrá solo
+            // porque explodeBird() pone state.gameRunning = false.
         }
 
         // Chequear colisiones con tuberías (ya no las movemos)
@@ -175,10 +185,10 @@ window.FlappyEagle = (() => {
             pipe.style.animationPlayState = 'paused';
         });
 
-        // Detener gemas (que son controladas por JS):
-        // Esto se logra deteniendo el requestAnimationFrame (en gameLoop),
-        // pero podemos detener su movimiento explícitamente si queremos,
-        // aunque con el 'gameRunning = false' en explodeBird() ya se detiene en el próximo frame de rAF.
+        // **NUEVO:** Detener las animaciones de spritesheet de las gemas (fe-bonus)
+        state.container.querySelectorAll('.fe-bonus').forEach(bonus => {
+            bonus.style.animationPlayState = 'paused';
+        });
 
         // Detener el movimiento de los fondos parallax (CSS)
         state.container.querySelectorAll('.fe-bg-layer').forEach(bg => {
@@ -448,7 +458,20 @@ window.FlappyEagle = (() => {
         state.bird.style.opacity = '1'; // volver a verlo
 
         // Limpiar elementos del juego
-        state.container.querySelectorAll('.fe-pipe, .fe-bonus, .fe-particle').forEach(el => el.remove());
+        state.container.querySelectorAll('.fe-pipe, .fe-bonus, .fe-particle').forEach(el => {
+            if (el.classList.contains('fe-pipe')) {
+                el.style.animation = '';
+                el.style.transform = '';
+                el.style.animationPlayState = '';
+            }
+            el.remove();
+        });
+
+        // **NUEVO:** Asegurar que los fondos no tengan estilos de pausa forzados
+        state.container.querySelectorAll('.fe-bg-layer').forEach(bg => {
+            // Esto asegura que la animación pueda ser controlada de nuevo por startGame
+            bg.style.animationPlayState = '';
+        });
 
         // Resetear variables principales
         state.score = 0;

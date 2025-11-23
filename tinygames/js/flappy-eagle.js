@@ -83,11 +83,16 @@ window.FlappyEagle = (() => {
         state.gameOverScreen.style.display = 'none';
 
         // Iniciar intervalos del juego
-        state.lastTime = performance.now(); // Inicializar el tiempo
-        requestAnimationFrame(gameLoop); // Iniciar el loop con rAF
+        state.lastTime = performance.now(); // Para la física del pájaro
+        requestAnimationFrame(gameLoop); // Para la física del pájaro y colisiones
         state.pipeInterval = setInterval(createPipe, 2000);
         state.bonusInterval = setInterval(createBonus, 3000);
         state.timerInterval = setInterval(updateTime, 1000);
+
+        // **NUEVO:** Iniciar las animaciones CSS
+        state.container.querySelectorAll('.fe-pipe').forEach(pipe => {
+            pipe.style.animationPlayState = 'running';
+        });
     }
 
     function jump() {
@@ -103,15 +108,6 @@ window.FlappyEagle = (() => {
         // 1. Cálculo de Delta Time (tiempo transcurrido desde el último frame)
         const deltaTime = timestamp - state.lastTime;
         state.lastTime = timestamp;
-
-        // 2. Cálculo de Velocidad (Ajustar la velocidad de píxeles/milisegundo)
-        // La velocidad de la Capa 4 es: state.containerWidth en 10000ms.
-        const BG_DURATION = 10000; // ms
-        const pipeSpeedPerMs = state.containerWidth / BG_DURATION; // píxeles por milisegundo
-
-        // Calcula cuánto se debe mover *en este frame*
-        const actualPipeMovement = pipeSpeedPerMs * deltaTime;
-        state.pipeSpeed = actualPipeMovement; // state.pipeSpeed ahora es la distancia a mover en este frame
 
         // 3. Física del pájaro (ajustar por deltaTime)
         // La gravedad y el salto deben escalarse por deltaTime para consistencia.
@@ -139,25 +135,10 @@ window.FlappyEagle = (() => {
             endGame('¡Tocaste el suelo!');
         }
 
-        // Mover tuberías y chequear colisiones
-        moveElements(state.pipes, (pipe) => {
-            if (checkCollision(state.bird, pipe.element)) {
-                explodeBird();
+        // Chequear colisiones con tuberías (ya no las movemos)
+        checkPipeCollisions();
 
-                // Esperar a que termine la animación de explosión
-                setTimeout(() => {
-                    endGame('¡Chocaste con una tubería!');
-                }, 650);
-            }
-        }, (pipe) => {
-            // Solo sumar puntos al pasar la tubería superior
-            if (pipe.element.classList.contains('fe-pipe-top')) {
-                state.score += 10;
-                updateScore();
-            }
-        });
-
-        // Mover bonus y chequear colisiones
+        // Mover bonus y chequear colisiones (mantener JavaScript para bonus)
         moveElements(state.bonuses, (bonus) => {
             if (checkCollision(state.bird, bonus.element)) {
                 collectBonus(bonus.element);
@@ -171,11 +152,30 @@ window.FlappyEagle = (() => {
         requestAnimationFrame(gameLoop);
     }
 
+    function checkPipeCollisions() {
+        for (let i = state.pipes.length - 1; i >= 0; i--) {
+            const pipe = state.pipes[i];
+
+            // ELIMINAR LÓGICA DE REMOCIÓN Y PUNTUACIÓN. Solo verificar colisión.
+
+            // Verificar colisión
+            if (checkCollision(state.bird, pipe.element)) {
+                explodeBird();
+                setTimeout(() => {
+                    endGame('¡Chocaste con una tubería!');
+                }, 650);
+            }
+        }
+    }
+
     function moveElements(elements, onCollision, onRemove) {
         for (let i = elements.length - 1; i >= 0; i--) {
             const item = elements[i];
-            let itemLeft = parseFloat(item.element.style.left); // Usar parseFloat para manejar decimales
-            itemLeft -= state.pipeSpeed; // ¡Aquí se usa la velocidad dinámica!
+            let itemLeft = parseFloat(item.element.style.left);
+            // Calcular velocidad para bonus basada en la velocidad de la capa 4
+            const BG_DURATION = 10000;
+            const bonusSpeed = state.containerWidth / BG_DURATION * 20; // aproximado para 50fps
+            itemLeft -= bonusSpeed;
             item.element.style.left = itemLeft + 'px';
 
             if (itemLeft < -100) {
@@ -190,29 +190,63 @@ window.FlappyEagle = (() => {
         }
     }
 
+    function handlePipeEnd(e) {
+        const pipeElement = e.target;
+
+        // Puntuación (solo la tubería superior)
+        if (pipeElement.classList.contains('fe-pipe-top')) {
+            state.score += 10;
+            updateScore();
+        }
+
+        // Remover del DOM y del array state.pipes
+        pipeElement.remove();
+        state.pipes = state.pipes.filter(p => p.element !== pipeElement);
+    }
+
     function createPipe() {
         if (!state.gameRunning) return;
 
         const GROUND_HEIGHT = 0; // del CSS
+        const PIPE_WIDTH = 80;
+        const BG_DURATION = 10; // Segundos (para Capa 4)
+
         let gap = 200;
         let minHeight = 50;
         let maxHeight = state.containerHeight - GROUND_HEIGHT - gap - 50;
-
         let topHeight = Math.random() * (maxHeight - minHeight) + minHeight;
 
+        // 1. CÁLCULO DE DISTANCIA Y DURACIÓN
+        // Distancia: Ancho del contenedor + Ancho de la tubería para que salga completamente
+        const moveDistance = state.containerWidth + PIPE_WIDTH;
+        // Duración: (Distancia_Total / Container_Width) * Duración_Capa_4
+        // Esto asegura que la velocidad coincida con la Capa 4.
+        const animationDuration = (moveDistance / state.containerWidth) * BG_DURATION;
+
+        // Función auxiliar para crear y configurar el elemento
+        const createPipeElement = (topOrBottom, height = 0) => {
+            const el = document.createElement('div');
+            el.className = `fe-pipe fe-pipe-${topOrBottom}`;
+
+            // 2. APLICAR ESTILOS DE ANIMACIÓN DINÁMICOS
+            el.style.left = state.containerWidth + 'px'; // Posición inicial (borde derecho)
+            el.style.height = height + 'px';
+            el.style.setProperty('--pipe-move-distance', `-${moveDistance}px`); // Distancia final
+            el.style.animationDuration = `${animationDuration}s`;
+            el.style.animationPlayState = state.gameRunning ? 'running' : 'paused';
+
+            // 3. LISTENER PARA ELIMINACIÓN Y PUNTUACIÓN
+            el.addEventListener('animationend', handlePipeEnd, { once: true });
+            return el;
+        };
+
         // --- Tubería superior ---
-        let pipeTop = document.createElement('div');
-        pipeTop.className = 'fe-pipe fe-pipe-top';
-        pipeTop.style.left = state.containerWidth + 'px';
-        pipeTop.style.height = topHeight + 'px'; // Esto define la altura que el CSS debe cubrir con cajas
+        let pipeTop = createPipeElement('top', topHeight);
         state.container.appendChild(pipeTop);
 
         // --- Tubería inferior ---
-        let pipeBottom = document.createElement('div');
-        pipeBottom.className = 'fe-pipe fe-pipe-bottom';
-        pipeBottom.style.left = state.containerWidth + 'px';
+        let pipeBottom = createPipeElement('bottom', (state.containerHeight - GROUND_HEIGHT - topHeight - gap));
         pipeBottom.style.bottom = GROUND_HEIGHT + 'px';
-        pipeBottom.style.height = (state.containerHeight - GROUND_HEIGHT - topHeight - gap) + 'px'; // Esto define la altura que el CSS debe cubrir con cajas
         state.container.appendChild(pipeBottom);
 
         state.pipes.push({ element: pipeTop });
@@ -335,6 +369,11 @@ window.FlappyEagle = (() => {
         clearInterval(state.pipeInterval);
         clearInterval(state.bonusInterval);
         clearInterval(state.timerInterval);
+
+        // **NUEVO:** Pausar las animaciones CSS
+        state.container.querySelectorAll('.fe-pipe').forEach(pipe => {
+            pipe.style.animationPlayState = 'paused';
+        });
 
         state.gameOverScreen.querySelector('#fe-final-score').textContent = 'Puntuación Final: ' + state.score;
         state.gameOverScreen.querySelector('#fe-final-time').textContent = message;

@@ -74,6 +74,14 @@
     }
 }
 
+/* ANIMACIÓN DE DESPLAZAMIENTO LATERAL PARA TUBERÍAS */
+@keyframes fe-scroll-pipe {
+    /* Mantiene el inicio en 0 de traslación */
+    from { transform: translateX(0); }
+    /* Mueve la distancia total calculada en JS (ancho del contenedor + 80px) */
+    to { transform: translateX(var(--pipe-move-distance)); }
+}
+
 /* PÁJARO */
 .flappyeagle-embed #fe-bird {
     z-index: 2000;
@@ -115,6 +123,15 @@
     background-repeat: repeat-y; /* Clave: repetir verticalmente */
     background-size: 80px 80px; /* Tamaño de una caja/unidad */
     z-index: 15;
+
+    /* MODIFICAR PROPIEDADES DE ANIMACIÓN */
+    animation-name: fe-scroll-pipe;
+    animation-timing-function: linear;
+    /* La duración se establecerá en JS */
+    animation-duration: 10s; /* Valor de respaldo, se pisa en JS */
+    animation-iteration-count: 1; /* ¡Ejecutar solo una vez! */
+    animation-fill-mode: forwards; /* Clave: mantiene la tubería fuera de pantalla */
+    animation-play-state: paused;
 }
 
 /* BONUS (gemas) */

@@ -283,10 +283,34 @@ window.FlappyEagle = (() => {
 
 
 
+    // Constante para reducir la hitbox del obstáculo (en píxeles)
+    const COLLISION_PADDING = 20;
+
     function checkCollision(element1, element2) {
         const rect1 = element1.getBoundingClientRect();
-        const rect2 = element2.getBoundingClientRect();
-        return !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom);
+        let rect2 = element2.getBoundingClientRect();
+
+        // Aplicar padding si element2 es un obstáculo (tubería o bonus)
+        // Usamos hasOwnProperty para verificar si el elemento tiene la clase fe-pipe
+        if (element2.classList.contains('fe-pipe') || element2.classList.contains('fe-bonus')) {
+            // Creamos una copia de las dimensiones de la tubería (rect2) y ajustamos
+            rect2 = {
+                left: rect2.left + COLLISION_PADDING,
+                right: rect2.right - COLLISION_PADDING,
+                top: rect2.top + COLLISION_PADDING,
+                bottom: rect2.bottom - COLLISION_PADDING,
+                width: rect2.width - (2 * COLLISION_PADDING),
+                height: rect2.height - (2 * COLLISION_PADDING)
+            };
+        }
+
+        // Lógica de colisión con las dimensiones ajustadas
+        return !(
+            rect1.right < rect2.left ||
+            rect1.left > rect2.right ||
+            rect1.bottom < rect2.top ||
+            rect1.top > rect2.bottom
+        );
     }
 
     function updateScore() {

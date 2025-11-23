@@ -207,9 +207,10 @@ window.FlappyEagle = (() => {
     function createPipe() {
         if (!state.gameRunning) return;
 
-        const GROUND_HEIGHT = 0; // del CSS
+        const GROUND_HEIGHT = 0;
         const PIPE_WIDTH = 80;
-        const BG_DURATION = 10; // Segundos (para Capa 4)
+        // AUMENTAR la velocidad a 200 px/s para que sean visiblemente más rápidas que el fondo de 4s
+        const TARGET_SPEED_PX_PER_SEC = 225; // 200 px/s
 
         let gap = 200;
         let minHeight = 50;
@@ -219,9 +220,10 @@ window.FlappyEagle = (() => {
         // 1. CÁLCULO DE DISTANCIA Y DURACIÓN
         // Distancia: Ancho del contenedor + Ancho de la tubería para que salga completamente
         const moveDistance = state.containerWidth + PIPE_WIDTH;
-        // Duración: (Distancia_Total / Container_Width) * Duración_Capa_4
-        // Esto asegura que la velocidad coincida con la Capa 4.
-        const animationDuration = (moveDistance / state.containerWidth) * BG_DURATION;
+
+        // **CÁLCULO DE DURACIÓN:**
+        // Duración = Distancia Total (px) / Velocidad (px/s)
+        const animationDuration = moveDistance / TARGET_SPEED_PX_PER_SEC; // Resultado en segundos
 
         // Función auxiliar para crear y configurar el elemento
         const createPipeElement = (topOrBottom, height = 0) => {
@@ -318,7 +320,8 @@ window.FlappyEagle = (() => {
 
 
     // Constante para reducir la hitbox del obstáculo (en píxeles)
-    const COLLISION_PADDING = 20;
+    // Reducir de 20 a 10 para una colisión más precisa con la imagen de la caja
+    const COLLISION_PADDING = 10; // Ajustado para mejor precisión de colisión
 
     function checkCollision(element1, element2) {
         const rect1 = element1.getBoundingClientRect();

@@ -182,7 +182,7 @@ window.FlappyEagle = (() => {
         let pipeTop = document.createElement('div');
         pipeTop.className = 'fe-pipe fe-pipe-top';
         pipeTop.style.left = state.containerWidth + 'px';
-        pipeTop.style.height = topHeight + 'px';
+        pipeTop.style.height = topHeight + 'px'; // Esto define la altura que el CSS debe cubrir con cajas
         state.container.appendChild(pipeTop);
 
         // --- Tubería inferior ---
@@ -190,7 +190,7 @@ window.FlappyEagle = (() => {
         pipeBottom.className = 'fe-pipe fe-pipe-bottom';
         pipeBottom.style.left = state.containerWidth + 'px';
         pipeBottom.style.bottom = GROUND_HEIGHT + 'px';
-        pipeBottom.style.height = (state.containerHeight - GROUND_HEIGHT - topHeight - gap) + 'px';
+        pipeBottom.style.height = (state.containerHeight - GROUND_HEIGHT - topHeight - gap) + 'px'; // Esto define la altura que el CSS debe cubrir con cajas
         state.container.appendChild(pipeBottom);
 
         state.pipes.push({ element: pipeTop });

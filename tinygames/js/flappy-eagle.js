@@ -20,12 +20,12 @@ window.FlappyEagle = (() => {
         timeLeft: 60,
         gameRunning: false,
         gameStarted: false,
+        lastTime: 0, // Nuevo: Almacena el timestamp del fotograma anterior
 
         pipes: [],
         bonuses: [],
-        pipeSpeed: 3,
+        pipeSpeed: 0, // Lo calcularemos dinámicamente
 
-        gameInterval: null,
         pipeInterval: null,
         bonusInterval: null,
         timerInterval: null,
@@ -83,7 +83,8 @@ window.FlappyEagle = (() => {
         state.gameOverScreen.style.display = 'none';
 
         // Iniciar intervalos del juego
-        state.gameInterval = setInterval(gameLoop, 20);
+        state.lastTime = performance.now(); // Inicializar el tiempo
+        requestAnimationFrame(gameLoop); // Iniciar el loop con rAF
         state.pipeInterval = setInterval(createPipe, 2000);
         state.bonusInterval = setInterval(createBonus, 3000);
         state.timerInterval = setInterval(updateTime, 1000);
@@ -93,12 +94,32 @@ window.FlappyEagle = (() => {
         state.birdVelocity = state.jumpPower;
     }
 
-    function gameLoop() {
-        if (!state.gameRunning) return;
+    function gameLoop(timestamp) {
+        if (!state.gameRunning) {
+            // Si el juego terminó, NO pedir el siguiente frame
+            return;
+        }
 
-        // Física del pájaro
-        state.birdVelocity += state.gravity;
-        state.birdY += state.birdVelocity;
+        // 1. Cálculo de Delta Time (tiempo transcurrido desde el último frame)
+        const deltaTime = timestamp - state.lastTime;
+        state.lastTime = timestamp;
+
+        // 2. Cálculo de Velocidad (Ajustar la velocidad de píxeles/milisegundo)
+        // La velocidad de la Capa 4 es: state.containerWidth en 10000ms.
+        const BG_DURATION = 10000; // ms
+        const pipeSpeedPerMs = state.containerWidth / BG_DURATION; // píxeles por milisegundo
+
+        // Calcula cuánto se debe mover *en este frame*
+        const actualPipeMovement = pipeSpeedPerMs * deltaTime;
+        state.pipeSpeed = actualPipeMovement; // state.pipeSpeed ahora es la distancia a mover en este frame
+
+        // 3. Física del pájaro (ajustar por deltaTime)
+        // La gravedad y el salto deben escalarse por deltaTime para consistencia.
+        // Asume que 20ms era el tiempo objetivo original (1.0 = deltaTime / 20)
+        const timeScale = deltaTime / 20;
+
+        state.birdVelocity += state.gravity * timeScale; // Aplicar gravedad escalada
+        state.birdY += state.birdVelocity * timeScale; // Aplicar velocidad escalada
         state.bird.style.top = state.birdY + 'px';
 
         // Rotación del pájaro
@@ -117,8 +138,6 @@ window.FlappyEagle = (() => {
             explodeBird();
             endGame('¡Tocaste el suelo!');
         }
-
-
 
         // Mover tuberías y chequear colisiones
         moveElements(state.pipes, (pipe) => {
@@ -147,13 +166,16 @@ window.FlappyEagle = (() => {
             }
             return false;
         });
+
+        // 4. Llamar al siguiente frame
+        requestAnimationFrame(gameLoop);
     }
 
     function moveElements(elements, onCollision, onRemove) {
         for (let i = elements.length - 1; i >= 0; i--) {
             const item = elements[i];
-            let itemLeft = parseInt(item.element.style.left);
-            itemLeft -= state.pipeSpeed;
+            let itemLeft = parseFloat(item.element.style.left); // Usar parseFloat para manejar decimales
+            itemLeft -= state.pipeSpeed; // ¡Aquí se usa la velocidad dinámica!
             item.element.style.left = itemLeft + 'px';
 
             if (itemLeft < -100) {
@@ -233,8 +255,6 @@ window.FlappyEagle = (() => {
     }
 
     function explodeBird() {
-
-        clearInterval(state.gameInterval);
         state.gameRunning = false;
 
         state.bird.style.animation = 'none';
@@ -288,7 +308,6 @@ window.FlappyEagle = (() => {
 
     function endGame(message, won = false) {
         // Esta función ahora se llama después de la animación de explosión
-        clearInterval(state.gameInterval);
         clearInterval(state.pipeInterval);
         clearInterval(state.bonusInterval);
         clearInterval(state.timerInterval);
@@ -378,7 +397,6 @@ window.FlappyEagle = (() => {
     function destroy() {
         // Detener el juego y limpiar intervalos
         state.gameRunning = false;
-        clearInterval(state.gameInterval);
         clearInterval(state.pipeInterval);
         clearInterval(state.bonusInterval);
         clearInterval(state.timerInterval);

@@ -152,18 +152,56 @@ window.FlappyEagle = (() => {
         requestAnimationFrame(gameLoop);
     }
 
+    function freezeMovingElements() {
+        // Detener tuberías (el movimiento CSS)
+        state.container.querySelectorAll('.fe-pipe').forEach(pipe => {
+            // 1. Obtener la posición actual de TRANSLATE X
+            const style = window.getComputedStyle(pipe);
+            const transformValue = style.transform;
+            let currentX = 0;
+
+            if (transformValue && transformValue !== 'none') {
+                const matrixMatch = transformValue.match(/matrix(3d)?\((.+?)\)/);
+                if (matrixMatch) {
+                    const matrixValues = matrixMatch[2].split(', ');
+                    const txIndex = matrixValues.length === 6 ? 4 : 12;
+                    currentX = parseFloat(matrixValues[txIndex]);
+                }
+            }
+
+            // 2. CONGELAR POSICIÓN Y ANULAR ANIMACIÓN
+            pipe.style.animation = 'none';
+            pipe.style.transform = `translateX(${currentX}px)`;
+            pipe.style.animationPlayState = 'paused';
+        });
+
+        // Detener gemas (que son controladas por JS):
+        // Esto se logra deteniendo el requestAnimationFrame (en gameLoop),
+        // pero podemos detener su movimiento explícitamente si queremos,
+        // aunque con el 'gameRunning = false' en explodeBird() ya se detiene en el próximo frame de rAF.
+
+        // Detener el movimiento de los fondos parallax (CSS)
+        state.container.querySelectorAll('.fe-bg-layer').forEach(bg => {
+            bg.style.animationPlayState = 'paused';
+        });
+    }
+
     function checkPipeCollisions() {
         for (let i = state.pipes.length - 1; i >= 0; i--) {
             const pipe = state.pipes[i];
 
-            // ELIMINAR LÓGICA DE REMOCIÓN Y PUNTUACIÓN. Solo verificar colisión.
-
             // Verificar colisión
             if (checkCollision(state.bird, pipe.element)) {
+
+                // **PASO CLAVE: CONGELAR AQUÍ**
+                freezeMovingElements();
+
                 explodeBird();
                 setTimeout(() => {
                     endGame('¡Chocaste con una tubería!');
                 }, 650);
+                // Salir del loop para evitar múltiples llamadas
+                return;
             }
         }
     }
@@ -372,11 +410,6 @@ window.FlappyEagle = (() => {
         clearInterval(state.pipeInterval);
         clearInterval(state.bonusInterval);
         clearInterval(state.timerInterval);
-
-        // **NUEVO:** Pausar las animaciones CSS
-        state.container.querySelectorAll('.fe-pipe').forEach(pipe => {
-            pipe.style.animationPlayState = 'paused';
-        });
 
         state.gameOverScreen.querySelector('#fe-final-score').textContent = 'Puntuación Final: ' + state.score;
         state.gameOverScreen.querySelector('#fe-final-time').textContent = message;

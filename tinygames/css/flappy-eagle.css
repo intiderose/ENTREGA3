@@ -155,11 +155,11 @@
 /* BOMBAS */
 .flappyeagle-embed .fe-bomb {
     position: absolute;
-    width: 33.6px; /* Ancho de 1 frame (21px * 1.6) */
-    height: 33.6px; /* Alto de 1 frame (21px * 1.6) */
+    width: 52.5px; /* Ancho de 1 frame (21px * 2.5) */
+    height: 52.5px; /* Alto de 1 frame (21px * 2.5) */
     z-index: 15;
     background-image: url('../assets/bombs.png');
-    background-size: 168px 33.6px; /* Tamaño total del spritesheet (105px*1.6 x 21px*1.6) */
+    background-size: 262.5px 52.5px; /* Tamaño total del spritesheet (105px*2.5 x 21px*2.5) */
     animation:
         fe-bomb-spin 0.7s steps(5) infinite,
         fe-gem-float 1.4s ease-in-out infinite;
@@ -167,7 +167,7 @@
 
 @keyframes fe-bomb-spin {
     from { background-position: 0 0; }
-    to   { background-position: -168px 0; } /* Mueve 5 frames (5 * 33.6px) */
+    to   { background-position: -262.5px 0; } /* Mueve 5 frames (5 * 52.5px) */
 }
 
 /* Nueva animación para flotar */

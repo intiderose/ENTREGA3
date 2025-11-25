@@ -236,10 +236,12 @@
     text-align: center;
     z-index: 40;
     display: none;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
 .flappyeagle-embed #fe-game-over h1 {
-    font-size: 48px;
+    font-size: 42px;
     margin-bottom: 20px;
 }
 
@@ -268,11 +270,14 @@
     border-radius: 15px;
     text-align: center;
     z-index: 40;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
 .flappyeagle-embed #fe-instructions h2 {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     color: #333;
+    font-size: 32px;
 }
 
 .flappyeagle-embed #fe-instructions p {

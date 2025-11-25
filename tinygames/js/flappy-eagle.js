@@ -415,10 +415,10 @@ window.FlappyEagle = (() => {
 
         const title = state.gameOverScreen.querySelector('h1');
         if (won) {
-            title.textContent = '🎉 ¡Victoria! 🎉';
+            title.textContent = 'Ganaste';
             title.style.color = '#4CAF50';
         } else {
-            title.textContent = '💥 Game Over 💥';
+            title.textContent = 'Perdiste';
             title.style.color = '#f44336';
         }
     }

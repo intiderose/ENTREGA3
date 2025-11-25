@@ -82,7 +82,7 @@ window.FlappyEagle = (() => {
 
         // Reiniciar estado visual del pájaro
         state.bird.classList.remove('fe-exploding');
-        state.bird.style.transform = 'rotate(0deg)';
+        state.bird.style.transform = 'translateX(-50%) rotate(0deg)';
         state.gameOverScreen.style.display = 'none';
 
         // Iniciar intervalos del juego
@@ -124,7 +124,7 @@ window.FlappyEagle = (() => {
 
         // Rotación del pájaro
         let rotation = Math.min(Math.max(state.birdVelocity * 3, -30), 90);
-        state.bird.style.transform = `rotate(${rotation}deg)`;
+        state.bird.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
 
         // Límites de pantalla
         if (state.birdY < 0) {
@@ -324,7 +324,7 @@ window.FlappyEagle = (() => {
 
         state.bird.style.animation = 'none';
         state.bird.style.removeProperty('animation');
-        state.bird.style.transform = 'none';
+        state.bird.style.transform = 'translateX(-50%)';
 
         void state.bird.offsetWidth;
 
@@ -438,7 +438,7 @@ window.FlappyEagle = (() => {
         state.bird.style.animation = "fe-bird-flap 0.4s steps(4) infinite";
 
         // Restaurar rotación
-        state.bird.style.transform = 'rotate(0deg)';
+        state.bird.style.transform = 'translateX(-50%) rotate(0deg)';
 
         // Quitar cualquier rastro de explosión
         state.bird.classList.remove('fe-exploding');

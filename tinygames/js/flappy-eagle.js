@@ -388,6 +388,7 @@ window.FlappyEagle = (() => {
         state.timeLeft--;
         updateTimer();
         if (state.timeLeft <= 0) {
+            state.gameRunning = false;
             endGame('¡Ganaste! Completaste el tiempo', true);
         }
     }

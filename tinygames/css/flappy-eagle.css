@@ -84,7 +84,7 @@
 
 /* PÁJARO */
 .flappyeagle-embed #fe-bird {
-    z-index: 2000;
+    z-index: 10; /* Cambiado de 2000 a 10 para estar debajo de la UI */
     position: absolute;
     left: 50%;
     transform: translateX(-50%);

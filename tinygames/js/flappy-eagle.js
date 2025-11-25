@@ -93,7 +93,7 @@ window.FlappyEagle = (() => {
         state.bombInterval = setInterval(createBomb, 4000);
         state.timerInterval = setInterval(updateTime, 1000);
 
-        // **NUEVO:** Iniciar las animaciones CSS
+        // Iniciar las animaciones CSS
         state.container.querySelectorAll('.fe-pipe').forEach(pipe => {
             pipe.style.animationPlayState = 'running';
         });
@@ -132,17 +132,17 @@ window.FlappyEagle = (() => {
             state.birdVelocity = 0;
         }
         // --- Detectar suelo real basado en la altura del piso (100px) ---
-        const GROUND_HEIGHT = 100; // del CSS: .fe-pipe-bottom { bottom: 100px; }
+        const GROUND_HEIGHT = 100;
 
         if (state.birdY + state.bird.offsetHeight >= state.containerHeight ) {
             explodeBird();
             endGame('¡Tocaste el suelo!');
         }
 
-        // Chequear colisiones con tuberías (ya no las movemos)
+        // Chequear colisiones con tuberías
         checkPipeCollisions();
 
-        // Mover bonus y chequear colisiones (mantener JavaScript para bonus)
+        // Mover bonus y chequear colisiones
         moveElements(state.bonuses, (bonus) => {
             if (checkCollision(state.bird, bonus.element)) {
                 collectBonus(bonus.element);
@@ -172,9 +172,6 @@ window.FlappyEagle = (() => {
     function checkPipeCollisions() {
         for (let i = state.pipes.length - 1; i >= 0; i--) {
             const pipe = state.pipes[i];
-
-            // ELIMINAR LÓGICA DE REMOCIÓN Y PUNTUACIÓN. Solo verificar colisión.
-
             // Verificar colisión
             if (checkCollision(state.bird, pipe.element)) {
                 explodeBird();
@@ -209,13 +206,6 @@ window.FlappyEagle = (() => {
 
     function handlePipeEnd(e) {
         const pipeElement = e.target;
-
-        // Puntuación (solo la tubería superior)
-        if (pipeElement.classList.contains('fe-pipe-top')) {
-            state.score += 10;
-            updateScore();
-        }
-
         // Remover del DOM y del array state.pipes
         pipeElement.remove();
         state.pipes = state.pipes.filter(p => p.element !== pipeElement);
@@ -348,8 +338,7 @@ window.FlappyEagle = (() => {
 
 
 
-    // Constante para reducir la hitbox del obstáculo (en píxeles)
-    // Reducir de 20 a 10 para una colisión más precisa con la imagen de la caja
+    // Constante para reducir la hitbox (en píxeles)
     const COLLISION_PADDING = 10; // Ajustado para mejor precisión de colisión
 
     function checkCollision(element1, element2) {
@@ -404,7 +393,7 @@ window.FlappyEagle = (() => {
         clearInterval(state.bombInterval);
         clearInterval(state.timerInterval);
 
-        // **NUEVO:** Pausar las animaciones CSS
+        // Pausar las animaciones CSS
         state.container.querySelectorAll('.fe-pipe').forEach(pipe => {
             pipe.style.animationPlayState = 'paused';
         });
@@ -459,7 +448,7 @@ window.FlappyEagle = (() => {
     }
 
 
-    // --- MÉTODOS PÚBLICOS ---
+
     function init(containerElement) {
         if (!containerElement) {
             console.error("FlappyEagle: El contenedor no fue encontrado.");
@@ -512,7 +501,6 @@ window.FlappyEagle = (() => {
         Object.keys(state).forEach(key => state[key] = null);
     }
 
-    // Exponer la API pública
     return {
         init,
         destroy

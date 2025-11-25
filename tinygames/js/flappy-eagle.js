@@ -179,7 +179,7 @@ window.FlappyEagle = (() => {
             if (checkCollision(state.bird, pipe.element)) {
                 explodeBird();
                 setTimeout(() => {
-                    endGame('¡Chocaste con una tubería!');
+                    endGame('¡Chocaste con una caja!');
                 }, 650);
             }
         }

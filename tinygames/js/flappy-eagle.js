@@ -24,10 +24,12 @@ window.FlappyEagle = (() => {
 
         pipes: [],
         bonuses: [],
+        bombs: [],
         pipeSpeed: 0, // Lo calcularemos dinámicamente
 
         pipeInterval: null,
         bonusInterval: null,
+        bombInterval: null,
         timerInterval: null,
 
         containerHeight: 0,
@@ -70,12 +72,13 @@ window.FlappyEagle = (() => {
         state.birdVelocity = 0;
         state.pipes = [];
         state.bonuses = [];
+        state.bombs = [];
 
         updateScore();
         updateTimer();
 
         // Limpiar elementos de partidas anteriores
-        state.container.querySelectorAll('.fe-pipe, .fe-bonus, .fe-particle').forEach(el => el.remove());
+        state.container.querySelectorAll('.fe-pipe, .fe-bonus, .fe-particle, .fe-bomb').forEach(el => el.remove());
 
         // Reiniciar estado visual del pájaro
         state.bird.classList.remove('fe-exploding');
@@ -87,6 +90,7 @@ window.FlappyEagle = (() => {
         requestAnimationFrame(gameLoop); // Para la física del pájaro y colisiones
         state.pipeInterval = setInterval(createPipe, 2000);
         state.bonusInterval = setInterval(createBonus, 3000);
+        state.bombInterval = setInterval(createBomb, 4000);
         state.timerInterval = setInterval(updateTime, 1000);
 
         // **NUEVO:** Iniciar las animaciones CSS
@@ -143,6 +147,19 @@ window.FlappyEagle = (() => {
             if (checkCollision(state.bird, bonus.element)) {
                 collectBonus(bonus.element);
                 bonus.element.remove();
+                return true; // Indica que fue removido
+            }
+            return false;
+        });
+
+        // Mover bombas y chequear colisiones
+        moveElements(state.bombs, (bomb) => {
+            if (checkCollision(state.bird, bomb.element)) {
+                explodeBird();
+                bomb.element.remove();
+                setTimeout(() => {
+                    endGame('¡Chocaste con una bomba!');
+                }, 650);
                 return true; // Indica que fue removido
             }
             return false;
@@ -268,6 +285,18 @@ window.FlappyEagle = (() => {
         state.bonuses.push({ element: bonusElement });
     }
 
+    function createBomb() {
+        if (!state.gameRunning) return;
+
+        let bombElement = document.createElement('div');
+        bombElement.className = 'fe-bomb';
+        bombElement.style.left = state.containerWidth + 'px';
+        bombElement.style.top = (Math.random() * (state.containerHeight - 250) + 50) + 'px';
+        state.container.appendChild(bombElement);
+
+        state.bombs.push({ element: bombElement });
+    }
+
 
     function collectBonus(bonusElement) {
         state.score += 50;
@@ -329,7 +358,7 @@ window.FlappyEagle = (() => {
 
         // Aplicar padding si element2 es un obstáculo (tubería o bonus)
         // Usamos hasOwnProperty para verificar si el elemento tiene la clase fe-pipe
-        if (element2.classList.contains('fe-pipe') || element2.classList.contains('fe-bonus')) {
+        if (element2.classList.contains('fe-pipe') || element2.classList.contains('fe-bonus') || element2.classList.contains('fe-bomb')) {
             // Creamos una copia de las dimensiones de la tubería (rect2) y ajustamos
             rect2 = {
                 left: rect2.left + COLLISION_PADDING,
@@ -371,6 +400,7 @@ window.FlappyEagle = (() => {
         // Esta función ahora se llama después de la animación de explosión
         clearInterval(state.pipeInterval);
         clearInterval(state.bonusInterval);
+        clearInterval(state.bombInterval);
         clearInterval(state.timerInterval);
 
         // **NUEVO:** Pausar las animaciones CSS
@@ -415,7 +445,7 @@ window.FlappyEagle = (() => {
         state.bird.style.opacity = '1'; // volver a verlo
 
         // Limpiar elementos del juego
-        state.container.querySelectorAll('.fe-pipe, .fe-bonus, .fe-particle').forEach(el => el.remove());
+        state.container.querySelectorAll('.fe-pipe, .fe-bonus, .fe-particle, .fe-bomb').forEach(el => el.remove());
 
         // Resetear variables principales
         state.score = 0;
@@ -465,6 +495,7 @@ window.FlappyEagle = (() => {
         state.gameRunning = false;
         clearInterval(state.pipeInterval);
         clearInterval(state.bonusInterval);
+        clearInterval(state.bombInterval);
         clearInterval(state.timerInterval);
 
         // Limpiar listeners

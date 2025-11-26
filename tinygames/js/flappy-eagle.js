@@ -67,7 +67,7 @@ window.FlappyEagle = (() => {
     function startGame() {
         state.gameRunning = true;
         state.score = 0;
-        state.timeLeft = 7;
+        state.timeLeft = 60;
         state.birdY = state.containerHeight / 2;
         state.birdVelocity = 0;
         state.pipes = [];

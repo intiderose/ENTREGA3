@@ -284,3 +284,10 @@
     margin: 10px 0;
     color: #666;
 }
+
+.galeria-img {
+    width: 350px;
+    height: 300px;
+    object-fit: contain; /* Mostrar la imagen completa */
+    border-radius: 70px;
+}
